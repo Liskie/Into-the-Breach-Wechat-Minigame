@@ -1,23 +1,31 @@
 import SceneKeys from '../consts/SceneKeys';
 import TextureKeys from '../consts/TextureKeys';
-import { getScale } from '../utils/index';
+import {getScale} from '../utils/index';
+
 export default class Game extends Phaser.Scene {
     constructor() {
         // 注册场景名称
         super(SceneKeys.Game);
         this.map = new Array();
     }
+
     init() {
         const hello = '有一说一杰哥组长真牛逼';
         console.log(hello);
     }
+
     create() {
         this.drawMap();
     }
+
     update() {
     }
+
     drawMap() {
-        const { width, height } = this.game.scale;
+        const {
+            width,
+            height
+        } = this.game.scale;
         this._scale = getScale(width, height);
         console.log(width);
         console.log(height);
@@ -30,11 +38,15 @@ export default class Game extends Phaser.Scene {
         const dy = h / 3.5;
         for (let i = 0; i < 8; i++) {
             const x = startX - i * dx;
-            this.background = this.add.image(x, startY + i * dy, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5);
+            this.background = this.add.image(x, startY + i * dy, TextureKeys.Ground)
+                .setDisplaySize(w, h)
+                .setOrigin(0.5, 0.5);
             this.map.push([x, startY + i * dy]);
             for (let j = 1; j < 8; ++j) {
                 const y = startY + i * dy + j * dy;
-                this.background = this.add.image(x + (j * w) / 2, y, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5);
+                this.background = this.add.image(x + (j * w) / 2, y, TextureKeys.Ground)
+                    .setDisplaySize(w, h)
+                    .setOrigin(0.5, 0.5);
                 this.map.push([x + (j * w) / 2, y]);
             }
         }

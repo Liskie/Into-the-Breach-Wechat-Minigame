@@ -60,5 +60,4 @@
 "staticFiles": {
 "staticPath": "public",
 "watcherGlob": "\*\*"
-}
-}
+} }

@@ -1,10 +1,11 @@
 /**
  * 游戏主函数
  */
-import { screenWidth as width, screenHeight as height } from './utils/index';
+import {screenWidth as width, screenHeight as height} from './utils/index';
 import Preloader from './scenes/Preloader';
 import Game from './scenes/Game';
 import StartGame from './scenes/StartGame';
+
 export default class Main {
     constructor() {
         this.config = {};
@@ -23,7 +24,7 @@ export default class Main {
             physics: {
                 default: 'arcade',
                 arcade: {
-                    gravity: { y: 200 },
+                    gravity: {y: 200},
                     // debug: true,
                 },
             },
@@ -32,6 +33,7 @@ export default class Main {
         };
         this.create();
     }
+
     create() {
         // 创建 phaser游戏s
         new Phaser.Game(this.config);

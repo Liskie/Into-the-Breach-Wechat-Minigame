@@ -1,21 +1,40 @@
 {
   "compilerOptions": {
-    "target": "es2016", // 指定 ECMAScript 版本
+    "target": "es2016",
+    // 指定 ECMAScript 版本
     "module": "es6",
-    "outDir": "./build/", // 将转换后的js，传输到要上传的文件夹下
-    "strict": true, // 启用所有严格类型检查选项
-    "skipLibCheck": true, // 跳过所有声明文件的类型检查
-    "moduleResolution": "node", // 使用 Node.js 风格解析模块
+    "outDir": "./build/",
+    // 将转换后的js，传输到要上传的文件夹下
+    "strict": true,
+    // 启用所有严格类型检查选项
+    "skipLibCheck": true,
+    // 跳过所有声明文件的类型检查
+    "moduleResolution": "node",
+    // 使用 Node.js 风格解析模块
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "baseUrl": "./src", // 基础目录
+    "baseUrl": "./src",
+    // 基础目录
     "allowJs": true,
-    "allowSyntheticDefaultImports": true, // 替代esModuleInterop，允许从没有默认导出的模块进行默认导入
-    "experimentalDecorators": true, // 启用对ES装饰器的实验性支持
+    "allowSyntheticDefaultImports": true,
+    // 替代esModuleInterop，允许从没有默认导出的模块进行默认导入
+    "experimentalDecorators": true,
+    // 启用对ES装饰器的实验性支持
     "emitDecoratorMetadata": true,
-    "typeRoots": ["node_modules/@types", "node_module/phaser/types", "src/typings"],
-    "types": ["Phaser"]
+    "typeRoots": [
+      "node_modules/@types",
+      "node_module/phaser/types",
+      "src/typings"
+    ],
+    "types": [
+      "Phaser"
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"] // *** 不进行类型检查的文件 ***
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+  // *** 不进行类型检查的文件 ***
 }

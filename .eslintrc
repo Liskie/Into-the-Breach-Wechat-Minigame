@@ -1,5 +1,8 @@
 {
-  "extends": ["airbnb-base", "airbnb-typescript/base"],
+  "extends": [
+    "airbnb-base",
+    "airbnb-typescript/base"
+  ],
   "parserOptions": {
     "project": "./tsconfig.eslint.json"
   },
@@ -12,14 +15,18 @@
     "no-new": "off",
     "import/prefer-default-export": "off",
     "lines-between-class-members": "off",
-    "@typescript-eslint/lines-between-class-members": ["off"],
+    "@typescript-eslint/lines-between-class-members": [
+      "off"
+    ],
     "max-len": "off",
     "arrow-parens": "off",
     "object-curly-newline": "off",
     "prefer-destructuring": "off",
     "allowForLoopAfterthoughts": "off",
     "comma-dangle": "off",
-    "@typescript-eslint/comma-dangle": ["off"],
+    "@typescript-eslint/comma-dangle": [
+      "off"
+    ],
     "no-param-reassign": "off",
     "no-plusplus": "off",
     "class-methods-use-this": "off",

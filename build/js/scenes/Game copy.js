@@ -1,7 +1,8 @@
 import SceneKeys from '../consts/SceneKeys';
 import TextureKeys from '../consts/TextureKeys';
-import { getScale } from '../utils/index';
+import {getScale} from '../utils/index';
 import AnimationKeys from '../consts/AnimationKeys';
+
 export default class Game extends Phaser.Scene {
     constructor() {
         // 注册场景名称
@@ -11,11 +12,16 @@ export default class Game extends Phaser.Scene {
         this.windows = [];
         this.score = 0;
     }
+
     init() {
         this.score = 0;
     }
+
     create() {
-        const { width, height } = this.game.scale;
+        const {
+            width,
+            height
+        } = this.game.scale;
         this._scale = getScale(width, height);
         console.log(this._scale);
         // this.add.image(画布x, 画布y, 图片key)
@@ -64,8 +70,10 @@ export default class Game extends Phaser.Scene {
             .image(Phaser.Math.Between(500, 800), height - 92, TextureKeys.MouseHole)
             .setOrigin(0.5, 1)
             .setScale(this._scale);
-        this.window1 = this.add.image(Phaser.Math.Between(300, 1000), 200, TextureKeys.Window1).setScale(this._scale);
-        this.window2 = this.add.image(Phaser.Math.Between(1300, 1500), 200, TextureKeys.Window2).setScale(this._scale);
+        this.window1 = this.add.image(Phaser.Math.Between(300, 1000), 200, TextureKeys.Window1)
+            .setScale(this._scale);
+        this.window2 = this.add.image(Phaser.Math.Between(1300, 1500), 200, TextureKeys.Window2)
+            .setScale(this._scale);
         this.windows = [this.window1, this.window2];
         this.bookcase1 = this.add
             .image(Phaser.Math.Between(1000, 1500), height - 60, TextureKeys.Bookcase1)
@@ -125,6 +133,7 @@ export default class Game extends Phaser.Scene {
         // /** 碰撞金币 */
         // this.physics.add.overlap(this.coins, this.mouse, this.handleCollectCoin, undefined, this);
     }
+
     update() {
         this.wrapMouseHole();
         this.wrapWindows();
@@ -135,6 +144,7 @@ export default class Game extends Phaser.Scene {
         this.floor.setTilePosition(this.cameras.main.scrollX);
         // this.teleportBackwards();
     }
+
     wrapMouseHole() {
         const scrollX = this.cameras.main.scrollX;
         const rightEdge = scrollX + this.scale.width;
@@ -142,6 +152,7 @@ export default class Game extends Phaser.Scene {
             this.mouseHole.x = Phaser.Math.Between(rightEdge + 100, rightEdge + 500);
         }
     }
+
     wrapWindows() {
         const scrollX = this.cameras.main.scrollX;
         const rightEdge = scrollX + this.scale.width;
@@ -160,6 +171,7 @@ export default class Game extends Phaser.Scene {
             this.window2.visible = !overlap;
         }
     }
+
     wrapBookcases() {
         const scrollX = this.cameras.main.scrollX;
         const rightEdge = scrollX + this.scale.width;
@@ -177,6 +189,7 @@ export default class Game extends Phaser.Scene {
             // this.spawnCoins();
         }
     }
+
     wrapLaserObtacle() {
         const scrollX = this.cameras.main.scrollX;
         const rightEdge = scrollX + this.scale.width;
@@ -194,10 +207,12 @@ export default class Game extends Phaser.Scene {
             body.position.y = this.laserObstacle.y;
         }
     }
+
     handleOverlapLaser(obj1, obj2) {
         const mouse = obj2; // as RocketMouse;
         mouse.kill();
     }
+
     handleCollectCoin(obj1, obj2) {
         const coin = obj2;
         this.coins.killAndHide(coin);
@@ -205,6 +220,7 @@ export default class Game extends Phaser.Scene {
         this.score += 1;
         this.scoreLabel.text = `Score: ${this.score}`;
     }
+
     spawnCoins() {
         this.coins.children.each(child => {
             const coin = child;
@@ -226,6 +242,7 @@ export default class Game extends Phaser.Scene {
             x += coin.width * 1.5;
         }
     }
+
     // 传送
     teleportBackwards() {
         const scrollX = this.cameras.main.scrollX;
