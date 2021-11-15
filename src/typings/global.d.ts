@@ -2,8 +2,8 @@
 import * as WX from '@types/wechat-miniprogram';
 
 declare global {
-    interface Window {
-        wx: WX;
-        canvas: HTMLCanvasElement;
-    }
+  interface Window {
+    wx: WX;
+    canvas: HTMLCanvasElement;
+  }
 }

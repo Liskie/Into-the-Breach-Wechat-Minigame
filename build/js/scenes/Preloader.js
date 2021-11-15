@@ -6,11 +6,33 @@ export default class Game extends Phaser.Scene {
         super(SceneKeys.Preloader);
     }
     preload() {
-        this.load.image(TextureKeys.Ground, 'images/ground.png');
+        // 首先加载资源
+        this.loadResources();
     }
     create() {
         // 在preload函数执行完，才执行
         // 切换到游戏场景,触发下一个场景的created
-        this.scene.start(SceneKeys.Game);
+        this.scene.start(SceneKeys.StartGame);
+    }
+    // 加载静态资源
+    loadResources() {
+        this.load.image(TextureKeys.Ground, 'images/ground.png');
+        this.load.image(TextureKeys.Calibration, 'images/calibration.png');
+        this.load.image(TextureKeys.Bg3, 'images/bg3.png');
+        this.load.image(TextureKeys.Sand1, 'images/sand1.png');
+        const { width, height } = this.game.scale;
+        const style = { font: '18px monospace', fill: '#ffffff' }; // 设置显示文本的样式
+        const percentText = this.make.text({
+            x: width / 2,
+            y: height / 2 - 5,
+            text: '0%',
+            style
+        }).setOrigin(0.5, 0.5);
+        this.load.on('progress', (value) => {
+            percentText.setText(`${parseInt(value) * 100}%`);
+        });
+        this.load.on('complete', () => {
+            percentText.destroy();
+        });
     }
 }

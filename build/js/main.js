@@ -2,9 +2,9 @@
  * 游戏主函数
  */
 import { screenWidth as width, screenHeight as height } from './utils/index';
-// import Music from './runtime/music';
 import Preloader from './scenes/Preloader';
 import Game from './scenes/Game';
+import StartGame from './scenes/StartGame';
 export default class Main {
     constructor() {
         this.config = {};
@@ -27,8 +27,8 @@ export default class Main {
                     // debug: true,
                 },
             },
-            // 注册场景：Preloader -> Game -> GameOver
-            scene: [Preloader, Game],
+            // 注册场景：Preloader -> StartGame->Game -> GameOver
+            scene: [Preloader, StartGame, Game],
         };
         this.create();
     }
