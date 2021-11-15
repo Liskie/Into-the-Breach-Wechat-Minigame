@@ -50,17 +50,17 @@ export default class Game extends Phaser.Scene {
       padding: { left: 20, right: 20, top: 10, bottom: 10 },
     }).setScrollFactor(0).setOrigin(0, 0);
 
-    // this.monster = this.add.image(0, height - 100, TextureKeys.Bg3).setOrigin(0.5, 0.5);
-    // this.tweens.add({
-    //   targets: [this.monster],
-    //   props: {
-    //     x: { value: '+=250', duration: 2000, ease: 'Linear' }
-    //   },
-    //   delay: 1000,
-    //   frameRate: 25, // 每秒10帧
-    //   repeat: -1, // 告诉动画要循环播放
-    //   yoyo: true
-    // });
+    this.monster = this.add.image(0, height - 100, TextureKeys.Bg3).setOrigin(0.5, 0.5);
+    this.tweens.add({
+      targets: [this.monster],
+      props: {
+        x: { value: '+=250', duration: 2000, ease: 'Linear' }
+      },
+      delay: 1000,
+      frameRate: 25, // 每秒10帧
+      repeat: -1, // 告诉动画要循环播放
+      yoyo: true
+    });
   }
   update() {
   }

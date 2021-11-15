@@ -49,17 +49,17 @@ export default class Game extends Phaser.Scene {
       }
     }
 
-    // for (let i = 0; i < 64; i++) {
-    //   const x = Math.floor(i / 8);
-    //   const y = Math.floor(i % 8);
-    //   console.log([x,y]);
-    //   this.make.text({
-    //     x: this.map[i][0],
-    //     y: this.map[i][1]-h/4,
-    //     text: `${x.toString()},${y.toString()}`,
-    //   }).setOrigin(0.5, 0.5);
-    //
-    //   var player = this.add.image(this.map[i][0],this.map[i][1]-h/4, TextureKeys.Sand1).setOrigin(0.5,0.5).setDisplaySize(w/2.5, h/2.5);
-    // }
+    for (let i = 0; i < 64; i++) {
+      const x = Math.floor(i / 8);
+      const y = Math.floor(i % 8);
+      console.log([x,y]);
+      this.make.text({
+        x: this.map[i][0],
+        y: this.map[i][1]-h/4,
+        text: `${x.toString()},${y.toString()}`,
+      }).setOrigin(0.5, 0.5);
+    
+      var player = this.add.image(this.map[i][0],this.map[i][1]-h/4, TextureKeys.Sand1).setOrigin(0.5,0.5).setDisplaySize(w/2.5, h/2.5);
+    }
   }
 }
