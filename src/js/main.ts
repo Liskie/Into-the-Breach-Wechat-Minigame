@@ -34,7 +34,7 @@ export default class Main {
         },
       },
       // 注册场景：Preloader -> StartGame->Game -> GameOver
-      scene: [Preloader, StartGame,Game],
+      scene: [Preloader, StartGame, Game],
     };
 
     this.create();
