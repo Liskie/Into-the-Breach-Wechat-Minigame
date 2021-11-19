@@ -27,8 +27,8 @@ export default class Game extends Phaser.Scene {
     this.load.image(TextureKeys.Bg3, 'images/bg3.png');
     this.load.image(TextureKeys.Sand1, 'images/sand1.png');
     this.load.image(TextureKeys.Boold, 'images/boold.png');
-    this.load.image(TextureKeys.EndTurn,'images/endTurn.png');
-    this.load.image(TextureKeys.Success,"images/success.png");
+    this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
+    this.load.image(TextureKeys.Success, 'images/success.png');
 
     const { width, height } = this.game.scale;
     const style = { font: '18px monospace', fill: '#ffffff' }; // 设置显示文本的样式
