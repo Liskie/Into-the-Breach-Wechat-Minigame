@@ -20,6 +20,9 @@ export default class Game extends Phaser.Scene {
         this.load.image(TextureKeys.Calibration, 'images/calibration.png');
         this.load.image(TextureKeys.Bg3, 'images/bg3.png');
         this.load.image(TextureKeys.Sand1, 'images/sand1.png');
+        this.load.image(TextureKeys.Boold, 'images/boold.png');
+        this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
+        this.load.image(TextureKeys.Success, "images/success.png");
         const { width, height } = this.game.scale;
         const style = { font: '18px monospace', fill: '#ffffff' }; // 设置显示文本的样式
         const percentText = this.make.text({
@@ -29,6 +32,7 @@ export default class Game extends Phaser.Scene {
             style
         }).setOrigin(0.5, 0.5);
         this.load.on('progress', (value) => {
+            // eslint-disable-next-line radix
             percentText.setText(`${parseInt(value) * 100}%`);
         });
         this.load.on('complete', () => {

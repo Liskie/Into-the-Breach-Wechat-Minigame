@@ -11,8 +11,8 @@ export const { pixelRatio, screenWidth, screenHeight } = wx.getSystemInfoSync();
  */
 export const getScale = (width, height) => {
     let scale = 1;
-    const designWidth = 375;
-    const designHeight = 667;
+    const designWidth = 736;
+    const designHeight = 414;
     const designRatio = designWidth / designHeight;
     const viewRatio = width / height;
     // 根据设计稿的宽高比与视口的宽高比判断缩放的基准

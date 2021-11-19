@@ -23,8 +23,8 @@ type ZoomInfo = {
  */
 export const getScale = (width: number, height: number): number => {
   let scale = 1;
-  const designWidth = 375;
-  const designHeight = 667;
+  const designWidth = 736;
+  const designHeight = 414;
   const designRatio = designWidth / designHeight;
   const viewRatio = width / height;
 
@@ -36,7 +36,6 @@ export const getScale = (width: number, height: number): number => {
     // 以高为基准做缩放
     scale = height / designHeight;
   }
-
   return scale;
 };
 
