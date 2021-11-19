@@ -30,6 +30,9 @@ export default class Game extends Phaser.Scene {
     this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
     this.load.image(TextureKeys.Success, 'images/success.png');
 
+    // mechs
+    this.load.image(TextureKeys.MechTankA, 'images/player/mech_tank_a.png');
+
     const { width, height } = this.game.scale;
     const style = { font: '18px monospace', fill: '#ffffff' }; // 设置显示文本的样式
     const percentText = this.make.text({

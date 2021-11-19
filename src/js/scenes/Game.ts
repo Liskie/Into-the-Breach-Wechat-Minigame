@@ -1,5 +1,6 @@
 import SceneKeys from '../consts/SceneKeys';
 import TextureKeys from '../consts/TextureKeys';
+import { Unit } from '../entities/Unit';
 // eslint-disable-next-line import/no-duplicates
 import { screenWidth as width, screenHeight as height } from '../utils/index';
 // eslint-disable-next-line import/no-duplicates
@@ -8,7 +9,7 @@ import { getScale } from '../utils/index';
 export default class Game extends Phaser.Scene {
   private _scale!: number;
   // 二维地图的索引
-  private map: Array<Array<number>> = new Array<Array<number>>();
+  public map: Array<Array<number>> = new Array<Array<number>>();
   // 二维地图对应的方格
   private mapBloack: Array<Phaser.GameObjects.Image> = new Array<Phaser.GameObjects.Image>();
   // 血条
@@ -27,6 +28,9 @@ export default class Game extends Phaser.Scene {
   private dotoX: number = 30;
   // 剩余血量
   private booldNum:number = 4;
+
+  // board that contains the units
+  public board: Array<Array<Unit>> = new Array<Array<Unit>>();
 
   constructor() {
     // 注册场景名称
@@ -81,19 +85,6 @@ export default class Game extends Phaser.Scene {
         this.map.push([x + (j * w) / 2, y]);
       }
     }
-    // this.mapBloack[0].setInteractive(new Phaser.Geom.Rectangle(0, 0, this.mapBloack[0].width - w / 2, this.mapBloack[0].height - h / 2), Phaser.Geom.Rectangle.Contains);
-    // this.mapBloack[0].addListener('pointerdown', () => {
-    //   this.mapBloack[0].destroy();
-    // });
-    // for (let i = 0; i < 64; i++) {
-    //   const x = Math.floor(i / 8);
-    //   const y = Math.floor(i % 8);
-    //   this.add.text(this.map[i][0], this.map[i][1] - h / 3.5, (`${x.toString()},${y.toString()}`), {
-    //     fontSize: '16px',
-    //     color: '#ffffff',
-    //     padding: { top: 2, bottom: 2 },
-    //   }).setScrollFactor(0).setOrigin(0.5, 0.5);
-    // }
   }
 
   drawButton() {
@@ -108,6 +99,7 @@ export default class Game extends Phaser.Scene {
       padding: { top: 5, bottom: 5 },
     }).setScrollFactor(0).setOrigin(0, 0);
   }
+
   buttonEvent() {
     this.ExitGameLabel.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.ExitGameLabel.width, this.ExitGameLabel.height), Phaser.Geom.Rectangle.Contains);
     this.ExitGameLabel.on('pointerdown', () => {
