@@ -5,6 +5,8 @@ import { Unit } from '../entities/Unit';
 import { screenWidth as width, screenHeight as height } from '../utils/index';
 // eslint-disable-next-line import/no-duplicates
 import { getScale } from '../utils/index';
+import { Mech } from '../entities/Mech';
+import { Coords } from '../entities/Coords';
 
 export default class Game extends Phaser.Scene {
   private _scale!: number;
@@ -30,16 +32,15 @@ export default class Game extends Phaser.Scene {
   private booldNum:number = 4;
 
   // board that contains the units
-  public board: Array<Array<Unit>> = new Array<Array<Unit>>();
+  private BOARD_SIZE = 8;
+  public board: Array<Array<Unit | null>> = new Array<Array<Unit>>();
+  // Mechs
+  private MECH_NUM = 3;
+  private mechs: Array<Unit> = new Array<Unit>(this.MECH_NUM);
 
   constructor() {
     // 注册场景名称
     super(SceneKeys.Game);
-  }
-
-  init() {
-    const hello: string = '有一说一涛神真牛逼';
-    console.log(hello);
   }
 
   create() {
@@ -49,6 +50,10 @@ export default class Game extends Phaser.Scene {
     this.drawTime();
     this.drawTurn();
     this.drawbloodEvent(1);
+
+    // Board init
+    this.createBoard();
+    this.createMechs();
   }
 
   update() {
@@ -160,5 +165,28 @@ export default class Game extends Phaser.Scene {
     // graphics.fillStyle(0xffffff);
     graphics.fillStyle(0x0C0C17);
     graphics.fillRect(x - i * dx, y, booldBgWidth / 30, booldBgHight / 4);
+  }
+
+  createBoard() {
+    for (let i = 0; i < this.BOARD_SIZE; i++) {
+      const tempo = new Array<Unit | null>();
+      for (let j = 0; j < this.BOARD_SIZE; j++) {
+        tempo.push(null);
+      }
+      this.board.push(tempo);
+    }
+  }
+
+  createMechs() {
+    let mechs_poses_debug: Array<Array<number>> = [[1, 1], [3, 4], [7, 5]];
+
+    for (let i = 0; i < 3; i++) {
+      let pos: Array<number> = this.map[mechs_poses_debug[i][0]][mechs_poses_debug[i][1]];
+      let mech = this.physics.add.sprite(pos[0], pos[1], 'dude');
+      this.mechs.push(new Mech(this,
+          new Coords(1, 1),
+
+      ));
+    }
   }
 }

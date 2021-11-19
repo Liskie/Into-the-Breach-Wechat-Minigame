@@ -29,7 +29,6 @@ export default class Main {
       physics: {
         default: 'arcade', // 重力
         arcade: {
-          gravity: { y: 200 },
           // debug: true,
         },
       },
