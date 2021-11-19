@@ -4,16 +4,14 @@ let instance;
  */
 export default class Music {
     constructor() {
-        if (instance) {
+        if (instance)
             return instance;
-        }
         instance = this;
         this.bgmAudio = new Audio();
         this.bgmAudio.loop = true;
         this.bgmAudio.src = 'audio/bgm.ogg';
         this.playBgm();
     }
-
     playBgm() {
         this.bgmAudio.play();
     }

@@ -2,11 +2,7 @@
  * 工具函数
  */
 // 导出屏幕像素比，屏幕宽度和高度
-export const {
-    pixelRatio,
-    screenWidth,
-    screenHeight
-} = wx.getSystemInfoSync();
+export const { pixelRatio, screenWidth, screenHeight } = wx.getSystemInfoSync();
 /**
  * 与标准设计稿相比，当然屏幕的 缩放比
  * @param width
@@ -23,7 +19,8 @@ export const getScale = (width, height) => {
     if (designRatio > viewRatio) {
         // 以宽为基准做缩放
         scale = width / designWidth;
-    } else {
+    }
+    else {
         // 以高为基准做缩放
         scale = height / designHeight;
     }
@@ -45,7 +42,8 @@ export const getZoom = (width, height) => {
         // 以宽为基准做缩放
         zoom = width / designWidth;
         bgY = -(height / zoom - designHeight) / 2;
-    } else {
+    }
+    else {
         // 以高为基准做缩放
         zoom = height / designHeight;
         bgX = -(width / zoom - designWidth) / 2;
