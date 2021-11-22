@@ -4,6 +4,7 @@ import TextureKeys from '../consts/TextureKeys';
 import { screenWidth as width, screenHeight as height } from '../utils/index';
 // eslint-disable-next-line import/no-duplicates
 import { getScale } from '../utils/index';
+import TextureProperties from '../consts/TextureProperties';
 export default class Game extends Phaser.Scene {
     constructor() {
         // 注册场景名称
@@ -18,10 +19,13 @@ export default class Game extends Phaser.Scene {
         this.dotoX = 30;
         // 剩余血量
         this.booldNum = 4;
-    }
-    init() {
-        const hello = '有一说一涛神真牛逼';
-        console.log(hello);
+        // board that contains the units
+        this.BOARD_SIZE = 8;
+        this.board = new Array();
+        this.boardWXCoords = [];
+        // Mechs
+        this.MECH_NUM = 3;
+        this.mechs = new Array(this.MECH_NUM);
     }
     create() {
         this.drawBackground();
@@ -30,6 +34,9 @@ export default class Game extends Phaser.Scene {
         this.drawTime();
         this.drawTurn();
         this.drawbloodEvent(1);
+        // Board init
+        this.createBoard();
+        // this.createMechs();
     }
     update() {
         this.gameTurnLabel.setText(this.Turn.toString());
@@ -62,19 +69,33 @@ export default class Game extends Phaser.Scene {
                 this.map.push([x + (j * w) / 2, y]);
             }
         }
-        // this.mapBloack[0].setInteractive(new Phaser.Geom.Rectangle(0, 0, this.mapBloack[0].width - w / 2, this.mapBloack[0].height - h / 2), Phaser.Geom.Rectangle.Contains);
-        // this.mapBloack[0].addListener('pointerdown', () => {
-        //   this.mapBloack[0].destroy();
-        // });
-        // for (let i = 0; i < 64; i++) {
-        //   const x = Math.floor(i / 8);
-        //   const y = Math.floor(i % 8);
-        //   this.add.text(this.map[i][0], this.map[i][1] - h / 3.5, (`${x.toString()},${y.toString()}`), {
-        //     fontSize: '16px',
-        //     color: '#ffffff',
-        //     padding: { top: 2, bottom: 2 },
-        //   }).setScrollFactor(0).setOrigin(0.5, 0.5);
-        // }
+        for (let i = 0; i < this.BOARD_SIZE; i++) {
+            this.boardWXCoords.push([]);
+            for (let j = 0; j < this.BOARD_SIZE; j++) {
+                const tempo = this.map[i * this.BOARD_SIZE + j];
+                tempo[1] -= h / 4.2;
+                this.boardWXCoords[i].push(tempo);
+            }
+        }
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                const mech = this.physics.add.sprite(this.boardWXCoords[i][j][0], this.boardWXCoords[i][j][1], TextureKeys.MechTankA)
+                    .setOrigin(0.5, 0.5)
+                    .setDisplaySize(TextureProperties.MechTankAWidth * this._scale, TextureProperties.MechTankAHeight * this._scale);
+                this.anims.create({
+                    key: i.toString() + j.toString(),
+                    frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
+                    frameRate: 3,
+                    repeat: -1
+                });
+                mech.anims.play(i.toString() + j.toString());
+                // this.add.text(this.boardWXCoords[i][j][0], this.boardWXCoords[i][j][1] - h / 3.5, (`${i.toString()},${j.toString()}`), {
+                //   fontSize: '16px',
+                //   color: '#ffffff',
+                //   padding: { top: 2, bottom: 2 },
+                // }).setScrollFactor(0).setOrigin(0.5, 0.5);
+            }
+        }
     }
     drawButton() {
         this._scale = getScale(width, height);
@@ -141,5 +162,14 @@ export default class Game extends Phaser.Scene {
         // graphics.fillStyle(0xffffff);
         graphics.fillStyle(0x0C0C17);
         graphics.fillRect(x - i * dx, y, booldBgWidth / 30, booldBgHight / 4);
+    }
+    createBoard() {
+        for (let i = 0; i < this.BOARD_SIZE; i++) {
+            const tempo = new Array();
+            for (let j = 0; j < this.BOARD_SIZE; j++) {
+                tempo.push(null);
+            }
+            this.board.push(tempo);
+        }
     }
 }

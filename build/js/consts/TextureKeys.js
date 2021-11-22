@@ -9,5 +9,6 @@ var TextureKeys;
     TextureKeys["Boold"] = "boold";
     TextureKeys["EndTurn"] = "endTurn";
     TextureKeys["Success"] = "success";
+    TextureKeys["MechTankA"] = "mech_tank_a";
 })(TextureKeys || (TextureKeys = {}));
 export default TextureKeys;

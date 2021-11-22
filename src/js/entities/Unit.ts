@@ -7,7 +7,7 @@ export class Unit {
   constructor(
     public game: Game,
     public coords: Coords,
-    public sprite: object,
+    public sprite: Phaser.Physics.Arcade.Sprite,
     public max_ap: number,
     public atk_range: number,
     public hp: number,
@@ -26,7 +26,6 @@ export class Unit {
   }
 
   move(des_coords: Coords) {
-    this.ap -= ap_cost; // ap cost should be calculated from current and des coords, depending on the path it takes.
     this.coords = des_coords;
   }
 
@@ -35,6 +34,5 @@ export class Unit {
   }
 
   refresh() {
-    this.ap = this.max_ap;
   }
 }

@@ -7,6 +7,7 @@ import { screenWidth as width, screenHeight as height } from '../utils/index';
 import { getScale } from '../utils/index';
 import { Mech } from '../entities/Mech';
 import { Coords } from '../entities/Coords';
+import TextureProperties from '../consts/TextureProperties';
 
 export default class Game extends Phaser.Scene {
   private _scale!: number;
@@ -34,6 +35,7 @@ export default class Game extends Phaser.Scene {
   // board that contains the units
   private BOARD_SIZE = 8;
   public board: Array<Array<Unit | null>> = new Array<Array<Unit>>();
+  public boardWXCoords: Array<Array<Array<number>>> = [];
   // Mechs
   private MECH_NUM = 3;
   private mechs: Array<Unit> = new Array<Unit>(this.MECH_NUM);
@@ -53,7 +55,7 @@ export default class Game extends Phaser.Scene {
 
     // Board init
     this.createBoard();
-    this.createMechs();
+    // this.createMechs();
   }
 
   update() {
@@ -88,6 +90,35 @@ export default class Game extends Phaser.Scene {
         const y: number = startY + i * dy + j * dy;
         this.mapBloack.push(this.add.image(x + (j * w) / 2, y, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5));
         this.map.push([x + (j * w) / 2, y]);
+      }
+    }
+
+    for (let i = 0; i < this.BOARD_SIZE; i++) {
+      this.boardWXCoords.push([]);
+      for (let j = 0; j < this.BOARD_SIZE; j++) {
+        const tempo: Array<number> = this.map[i * this.BOARD_SIZE + j];
+        tempo[1] -= h / 4.2;
+        this.boardWXCoords[i].push(tempo);
+      }
+    }
+
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        const mech = this.physics.add.sprite(this.boardWXCoords[i][j][0], this.boardWXCoords[i][j][1], TextureKeys.MechTankA)
+          .setOrigin(0.5, 0.5)
+          .setDisplaySize(TextureProperties.MechTankAWidth * this._scale, TextureProperties.MechTankAHeight * this._scale);
+        this.anims.create({
+          key: i.toString() + j.toString(),
+          frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
+          frameRate: 3,
+          repeat: -1
+        });
+        mech.anims.play(i.toString() + j.toString());
+        // this.add.text(this.boardWXCoords[i][j][0], this.boardWXCoords[i][j][1] - h / 3.5, (`${i.toString()},${j.toString()}`), {
+        //   fontSize: '16px',
+        //   color: '#ffffff',
+        //   padding: { top: 2, bottom: 2 },
+        // }).setScrollFactor(0).setOrigin(0.5, 0.5);
       }
     }
   }
@@ -177,16 +208,14 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  createMechs() {
-    let mechs_poses_debug: Array<Array<number>> = [[1, 1], [3, 4], [7, 5]];
-
-    for (let i = 0; i < 3; i++) {
-      let pos: Array<number> = this.map[mechs_poses_debug[i][0]][mechs_poses_debug[i][1]];
-      let mech = this.physics.add.sprite(pos[0], pos[1], 'dude');
-      this.mechs.push(new Mech(this,
-          new Coords(1, 1),
-
-      ));
-    }
-  }
+  // createMechs() {
+  //   const mechs_poses_debug: Array<Array<number>> = [[1, 1], [3, 4], [7, 5]];
+  //
+  //   for (let i = 0; i < 3; i++) {
+  //     const pos: Array<number> = this.map[mechs_poses_debug[i][0]][mechs_poses_debug[i][1]];
+  //     const mech = this.physics.add.sprite(pos[0], pos[1], 'dude');
+  //     this.mechs.push(new Mech(this,
+  //       new Coords(1, 1),));
+  //   }
+  // }
 }

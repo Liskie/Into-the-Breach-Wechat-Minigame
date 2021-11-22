@@ -1,5 +1,6 @@
 import SceneKeys from '../consts/SceneKeys';
 import TextureKeys from '../consts/TextureKeys';
+import TextureProperties from '../consts/TextureProperties';
 export default class Game extends Phaser.Scene {
     constructor() {
         // 注册场景名称
@@ -22,7 +23,9 @@ export default class Game extends Phaser.Scene {
         this.load.image(TextureKeys.Sand1, 'images/sand1.png');
         this.load.image(TextureKeys.Boold, 'images/boold.png');
         this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
-        this.load.image(TextureKeys.Success, "images/success.png");
+        this.load.image(TextureKeys.Success, 'images/success.png');
+        // mechs
+        this.load.spritesheet(TextureKeys.MechTankA, 'images/units/player/mech_tank_a.png', { frameWidth: TextureProperties.MechTankAWidth, frameHeight: TextureProperties.MechTankAHeight });
         const { width, height } = this.game.scale;
         const style = { font: '18px monospace', fill: '#ffffff' }; // 设置显示文本的样式
         const percentText = this.make.text({

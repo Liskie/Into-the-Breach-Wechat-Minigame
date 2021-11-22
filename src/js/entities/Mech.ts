@@ -6,7 +6,7 @@ export class Mech extends Unit {
   constructor(
     public game: Game,
     public coords: Coords,
-    public sprite: object,
+    public sprite: Phaser.Physics.Arcade.Sprite,
     public max_ap: number,
     public atk_range: number,
     public hp: number,

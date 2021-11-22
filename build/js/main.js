@@ -23,8 +23,7 @@ export default class Main {
             physics: {
                 default: 'arcade',
                 arcade: {
-                    gravity: { y: 200 },
-                    // debug: true,
+                // debug: true,
                 },
             },
             // 注册场景：Preloader -> StartGame->Game -> GameOver
