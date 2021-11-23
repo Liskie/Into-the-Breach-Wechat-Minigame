@@ -1,11 +1,17 @@
 import SceneKeys from '../consts/SceneKeys';
 import TextureKeys from '../consts/TextureKeys';
+import { Unit } from '../entities/Unit';
 // eslint-disable-next-line import/no-duplicates
 import { screenWidth as width, screenHeight as height } from '../utils/index';
 // eslint-disable-next-line import/no-duplicates
 import { getScale } from '../utils/index';
-import TextureProperties from '../consts/TextureProperties';
+import { Mech } from '../entities/Mech';
+import { Coords } from '../entities/Coords';
+import MechProperties from '../consts/MechProperties';
 export default class Game extends Phaser.Scene {
+    // mechs
+    // private MECH_NUM = 3;
+    // private mechs: Array<Unit> = new Array<Unit>(this.MECH_NUM);
     constructor() {
         // 注册场景名称
         super(SceneKeys.Game);
@@ -23,9 +29,6 @@ export default class Game extends Phaser.Scene {
         this.BOARD_SIZE = 8;
         this.board = new Array();
         this.boardWXCoords = [];
-        // Mechs
-        this.MECH_NUM = 3;
-        this.mechs = new Array(this.MECH_NUM);
     }
     create() {
         this.drawBackground();
@@ -36,7 +39,9 @@ export default class Game extends Phaser.Scene {
         this.drawbloodEvent(1);
         // Board init
         this.createBoard();
-        // this.createMechs();
+        this.createMechs();
+        // Development
+        this.dev();
     }
     update() {
         this.gameTurnLabel.setText(this.Turn.toString());
@@ -58,7 +63,7 @@ export default class Game extends Phaser.Scene {
         const startX = width / 2 + width / 7;
         const startY = height / 8;
         const dx = w / 2;
-        const dy = h / 3.5;
+        const dy = 21 * this._scale;
         for (let i = 0; i < 8; i++) {
             const x = startX - i * dx;
             this.mapBloack.push(this.add.image(x, startY + i * dy, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5));
@@ -73,27 +78,8 @@ export default class Game extends Phaser.Scene {
             this.boardWXCoords.push([]);
             for (let j = 0; j < this.BOARD_SIZE; j++) {
                 const tempo = this.map[i * this.BOARD_SIZE + j];
-                tempo[1] -= h / 4.2;
+                tempo[1] -= 16 * this._scale;
                 this.boardWXCoords[i].push(tempo);
-            }
-        }
-        for (let i = 0; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
-                const mech = this.physics.add.sprite(this.boardWXCoords[i][j][0], this.boardWXCoords[i][j][1], TextureKeys.MechTankA)
-                    .setOrigin(0.5, 0.5)
-                    .setDisplaySize(TextureProperties.MechTankAWidth * this._scale, TextureProperties.MechTankAHeight * this._scale);
-                this.anims.create({
-                    key: i.toString() + j.toString(),
-                    frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
-                    frameRate: 3,
-                    repeat: -1
-                });
-                mech.anims.play(i.toString() + j.toString());
-                // this.add.text(this.boardWXCoords[i][j][0], this.boardWXCoords[i][j][1] - h / 3.5, (`${i.toString()},${j.toString()}`), {
-                //   fontSize: '16px',
-                //   color: '#ffffff',
-                //   padding: { top: 2, bottom: 2 },
-                // }).setScrollFactor(0).setOrigin(0.5, 0.5);
             }
         }
     }
@@ -170,6 +156,45 @@ export default class Game extends Phaser.Scene {
                 tempo.push(null);
             }
             this.board.push(tempo);
+        }
+    }
+    createMechs() {
+        const mechsPosesDebug = [[1, 1], [3, 4], [7, 5]];
+        for (let i = 0; i < 3; i++) {
+            // const pos: Array<number> = this.boardWXCoords[mechsPosesDebug[i][0]][mechsPosesDebug[i][1]];
+            // const mech = this.physics.add.sprite(pos[0], pos[1], 'dude');
+            const mechSprite = this.physics.add.sprite(this.boardWXCoords[mechsPosesDebug[i][0]][mechsPosesDebug[i][1]][0], this.boardWXCoords[mechsPosesDebug[i][0]][mechsPosesDebug[i][1]][1], TextureKeys.MechTankA)
+                .setOrigin(0.5, 0.5)
+                .setScale(this._scale, this._scale);
+            this.anims.create({
+                key: `mech${i.toString()}`,
+                frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
+                frameRate: 3,
+                repeat: -1
+            });
+            mechSprite.anims.play(`mech${i.toString()}`);
+            this.board[mechsPosesDebug[i][0]][mechsPosesDebug[i][1]] = new Mech(this, new Coords(mechsPosesDebug[i][0], mechsPosesDebug[i][1]), mechSprite, MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+        }
+        // Generate reachable grid texture
+        this.add.graphics()
+            .fillStyle(0x13E92A)
+            .fillPoints([
+            new Phaser.Geom.Point(28.5, 0),
+            new Phaser.Geom.Point(0, 21.5),
+            new Phaser.Geom.Point(28.5, 42),
+            new Phaser.Geom.Point(56, 21.5)
+        ], true, true)
+            .setScale(this._scale)
+            .setAlpha(0.3)
+            .generateTexture(TextureKeys.ReachableGrid, 56, 42)
+            .destroy();
+    }
+    dev() {
+        if (this.board[1][1] instanceof Mech) {
+            this.board[1][1].showPossibleMoveDestinations();
+        }
+        else if (this.board[1][1] instanceof Unit) {
+            // this.board[1][1].showPossibleMoveDestinations();
         }
     }
 }

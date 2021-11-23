@@ -1,21 +1,21 @@
 import { Coords } from './Coords';
 export class Unit {
-    constructor(game, coords, sprite, max_ap, atk_range, hp, max_hp) {
+    constructor(game, coords, sprite, maxAp, atkRange, hp, maxHp) {
         this.game = game;
         this.coords = coords;
         this.sprite = sprite;
-        this.max_ap = max_ap;
-        this.atk_range = atk_range;
+        this.maxAp = maxAp;
+        this.atkRange = atkRange;
         this.hp = hp;
-        this.max_hp = max_hp;
+        this.maxHp = maxHp;
         this.dCoords = [[1, 0], [-1, 0], [0, 1], [0, -1]];
         this.path = new Array();
         this.coords = coords;
         this.sprite = sprite;
-        this.max_ap = max_ap;
-        this.atk_range = atk_range;
+        this.maxAp = maxAp;
+        this.atkRange = atkRange;
         this.hp = hp;
-        this.max_hp = max_hp;
+        this.maxHp = maxHp;
     }
     checkCoords(coords, dis, nowDis) {
         if (coords.x > 7 || coords.y > 7 || coords.x < 0 || coords.y < 0) {
@@ -27,6 +27,9 @@ export class Unit {
         return this.game.board[coords.x][coords.x] == null;
     }
     findPossibleMoveDestinations() {
+        /**
+         * @return res: Array<Array<boolean>> Reachability matrix of current unit.
+         */
         const res = new Array();
         const dis = new Array();
         for (let i = 0; i < 8; i++) {
@@ -58,7 +61,7 @@ export class Unit {
         }
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if (dis[i][j] <= this.max_ap) {
+                if (dis[i][j] <= this.maxAp) {
                     res[i][j] = true;
                 }
             }
@@ -66,6 +69,10 @@ export class Unit {
         return res;
     }
     findPathToCoords(toCoords) {
+        /**
+         * @params toCoords: Coords Coords of the destination tile.
+         * @return res: Array<Coords> Coords of the block on the path to the destination tile.
+         */
         const res = [];
         res[0] = new Coords(-1, -1);
         if (toCoords.x > 7 || toCoords.y > 7 || toCoords.x < 0 || toCoords.y < 0) {

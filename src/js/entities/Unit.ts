@@ -8,17 +8,17 @@ export class Unit {
     public game: Game,
     public coords: Coords,
     public sprite: Phaser.Physics.Arcade.Sprite,
-    public max_ap: number,
-    public atk_range: number,
+    public maxAp: number,
+    public atkRange: number,
     public hp: number,
-    public max_hp: number
+    public maxHp: number
   ) {
     this.coords = coords;
     this.sprite = sprite;
-    this.max_ap = max_ap;
-    this.atk_range = atk_range;
+    this.maxAp = maxAp;
+    this.atkRange = atkRange;
     this.hp = hp;
-    this.max_hp = max_hp;
+    this.maxHp = maxHp;
   }
 
   checkCoords(coords: Coords, dis: Array<Array<number>>, nowDis: number) {
@@ -34,6 +34,9 @@ export class Unit {
   private dCoords: Array<Array<number>> = [[1, 0], [-1, 0], [0, 1], [0, -1]];
   private path: Array<Array<Coords>> = new Array<Array<Coords>>();
   findPossibleMoveDestinations() {
+    /**
+     * @return res: Array<Array<boolean>> Reachability matrix of current unit.
+     */
     const res: Array<Array<boolean>> = new Array<Array<boolean>>();
     const dis: Array<Array<number>> = new Array<Array<number>>();
     for (let i = 0; i < 8; i++) {
@@ -65,7 +68,7 @@ export class Unit {
     }
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
-        if (dis[i][j] <= this.max_ap) {
+        if (dis[i][j] <= this.maxAp) {
           res[i][j] = true;
         }
       }
@@ -73,6 +76,10 @@ export class Unit {
     return res;
   }
   findPathToCoords(toCoords: Coords) {
+    /**
+     * @params toCoords: Coords Coords of the destination tile.
+     * @return res: Array<Coords> Coords of the block on the path to the destination tile.
+     */
     const res: Array<Coords> = [];
     res[0] = new Coords(-1, -1);
     if (toCoords.x > 7 || toCoords.y > 7 || toCoords.x < 0 || toCoords.y < 0) {
