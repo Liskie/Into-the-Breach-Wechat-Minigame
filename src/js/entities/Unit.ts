@@ -28,7 +28,7 @@ export class Unit {
     if (dis[coords.x][coords.y] !== -1 && dis[coords.x][coords.y] <= nowDis + 1) {
       return false;
     }
-    return this.game.board[coords.x][coords.x] == null;
+    return this.game.board[coords.x][coords.y] == null;
   }
 
   private dCoords: Array<Array<number>> = [[1, 0], [-1, 0], [0, 1], [0, -1]];
@@ -49,6 +49,7 @@ export class Unit {
         this.path[i][j] = new Coords(-1, -1);
       }
     }
+    dis[this.coords.x][this.coords.y] = 0;
     const queue: Array<Coords> = [];
     let qstart = 0;
     let qend = 0;
@@ -68,11 +69,12 @@ export class Unit {
     }
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
-        if (dis[i][j] <= this.maxAp) {
+        if (dis[i][j] <= this.maxAp && dis[i][j] != -1) {
           res[i][j] = true;
         }
       }
     }
+    res[this.coords.x][this.coords.y] = false;
     return res;
   }
   findPathToCoords(toCoords: Coords) {
@@ -103,7 +105,7 @@ export class Unit {
     return res;
   }
 
-  move(des_coords: Coords) {
+  moveTo(des_coords: Coords) {
     this.coords = des_coords;
   }
 
@@ -111,6 +113,6 @@ export class Unit {
     target.hp -= 1;
   }
 
-  refresh() {
+  refreshState() {
   }
 }

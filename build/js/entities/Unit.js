@@ -24,7 +24,7 @@ export class Unit {
         if (dis[coords.x][coords.y] !== -1 && dis[coords.x][coords.y] <= nowDis + 1) {
             return false;
         }
-        return this.game.board[coords.x][coords.x] == null;
+        return this.game.board[coords.x][coords.y] == null;
     }
     findPossibleMoveDestinations() {
         /**
@@ -42,6 +42,7 @@ export class Unit {
                 this.path[i][j] = new Coords(-1, -1);
             }
         }
+        dis[this.coords.x][this.coords.y] = 0;
         const queue = [];
         let qstart = 0;
         let qend = 0;
@@ -61,11 +62,12 @@ export class Unit {
         }
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if (dis[i][j] <= this.maxAp) {
+                if (dis[i][j] <= this.maxAp && dis[i][j] != -1) {
                     res[i][j] = true;
                 }
             }
         }
+        res[this.coords.x][this.coords.y] = false;
         return res;
     }
     findPathToCoords(toCoords) {
@@ -95,12 +97,12 @@ export class Unit {
         }
         return res;
     }
-    move(des_coords) {
+    moveTo(des_coords) {
         this.coords = des_coords;
     }
     attack(target) {
         target.hp -= 1;
     }
-    refresh() {
+    refreshState() {
     }
 }

@@ -8,6 +8,7 @@ import { getScale } from '../utils/index';
 import { Mech } from '../entities/Mech';
 import { Coords } from '../entities/Coords';
 import MechProperties from '../consts/MechProperties';
+import LevelKeys from '../consts/LevelKeys';
 
 export default class Game extends Phaser.Scene {
   public _scale!: number;
@@ -192,12 +193,11 @@ export default class Game extends Phaser.Scene {
   }
 
   createMechs() {
-    const mechsPosesDebug: Array<Array<number>> = [[1, 1], [3, 4], [7, 5]];
-
-    for (let i = 0; i < 3; i++) {
-      // const pos: Array<number> = this.boardWXCoords[mechsPosesDebug[i][0]][mechsPosesDebug[i][1]];
-      // const mech = this.physics.add.sprite(pos[0], pos[1], 'dude');
-      const mechSprite = this.physics.add.sprite(this.boardWXCoords[mechsPosesDebug[i][0]][mechsPosesDebug[i][1]][0], this.boardWXCoords[mechsPosesDebug[i][0]][mechsPosesDebug[i][1]][1], TextureKeys.MechTankA)
+    const levelJson = this.cache.json.get(LevelKeys.Level1);
+    for (let i = 0; i < levelJson.initMechPos.length; i++) {
+      const xCoord = levelJson.initMechPos[i][0];
+      const yCoord = levelJson.initMechPos[i][1];
+      const mechSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.MechTankA)
         .setOrigin(0.5, 0.5)
         .setScale(this._scale, this._scale);
       this.anims.create({
@@ -207,7 +207,7 @@ export default class Game extends Phaser.Scene {
         repeat: -1
       });
       mechSprite.anims.play(`mech${i.toString()}`);
-      this.board[mechsPosesDebug[i][0]][mechsPosesDebug[i][1]] = new Mech(this, new Coords(mechsPosesDebug[i][0], mechsPosesDebug[i][1]), mechSprite,
+      this.board[xCoord][yCoord] = new Mech(this, new Coords(xCoord, yCoord), mechSprite,
         MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
     }
 
@@ -224,6 +224,36 @@ export default class Game extends Phaser.Scene {
       .setAlpha(0.3)
       .generateTexture(TextureKeys.ReachableGrid, 56, 42)
       .destroy();
+  }
+
+  // Main game logic
+  doTurn() {
+    // oneTurn: alienMove -> showEnvEffects -> playerMove&Attack -> takeEnvEffects -> alienAttack
+    this.doAlienPhase1();
+    this.doEnvPhase1();
+    this.doPlayerPhase();
+    this.doEnvPhase2();
+    this.doAlienPhase2();
+  }
+
+  doAlienPhase1() {
+
+  }
+
+  doEnvPhase1() {
+
+  }
+
+  doPlayerPhase() {
+
+  }
+
+  doEnvPhase2() {
+
+  }
+
+  doAlienPhase2() {
+
   }
 
   dev() {

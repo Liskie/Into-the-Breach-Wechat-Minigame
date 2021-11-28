@@ -12,9 +12,6 @@ export class Mech extends Unit {
         this.maxHp = maxHp;
     }
     showPossibleMoveDestinations() {
-        // const x = this.game.boardWXCoords[0][0][0];
-        // const y = this.game.boardWXCoords[0][0][1];
-        // this.game.add.image(x, y, TextureKeys.ReachableGrid).setOrigin(0.5, 0.5);
         const reachMat = this.findPossibleMoveDestinations();
         for (let i = 0; i < this.game.BOARD_SIZE; i++) {
             for (let j = 0; j < this.game.BOARD_SIZE; j++) {
@@ -26,5 +23,8 @@ export class Mech extends Unit {
                 }
             }
         }
+    }
+    moveTo(des_coords) {
+        this.coords = des_coords;
     }
 }

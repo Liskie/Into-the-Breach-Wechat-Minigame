@@ -1,5 +1,5 @@
 enum MechProperties {
-  TankMaxAp = 4,
+  TankMaxAp = 5,
   TankAtkRange = 8,
   TankMaxHp = 3,
 }
