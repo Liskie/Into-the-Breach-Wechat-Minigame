@@ -98,6 +98,24 @@ export class Unit {
         return res;
     }
     moveTo(des_coords) {
+        const path = this.findPathToCoords(des_coords);
+        // There seems no implementation of sleep() in Phaser, so we have to try another approach
+        // for (let i = 0; i < path.length; i++) {
+        //   this.moveStepTo(path[i]);
+        //   sleep(20);
+        // }
+        let i = 0;
+        this.game.time.addEvent({
+            delay: 20,
+            callback: () => {
+                this.moveStepTo(path[i]);
+                i += 1;
+            },
+            callbackScope: this,
+            repeat: path.length - 1
+        });
+    }
+    moveStepTo(des_coords) {
         // Remove this unit from current coords of the board
         this.game.board[this.coords.x][this.coords.y] = null;
         // Change coords of this unit

@@ -19,7 +19,7 @@ export class Mech extends Unit {
     super(game, coords, sprite, maxAp, atkRange, hp, maxHp);
 
     // Show/clear move destinations on touch
-    this.sprite.on('pointerdown', () => {
+    this.sprite.on(Phaser.Input.Events.POINTER_DOWN, () => {
       if (this.game.possibleMoveDestinations.length === 0) {
         this.showPossibleMoveDestinations();
         this.game.possibleMoveDestinationsShowerMech = this;
@@ -56,7 +56,7 @@ export class Mech extends Unit {
             .setOrigin(0.5, 0.5)
             .setInteractive();
           this.game.possibleMoveDestinations.push(grid);
-          grid.on('pointerdown', () => {
+          grid.on(Phaser.Input.Events.POINTER_DOWN, () => {
             this.moveTo(new Coords(i, j));
           });
         }
@@ -72,5 +72,9 @@ export class Mech extends Unit {
     super.moveTo(des_coords);
     // decrease movesLeft of this mech
     this.movesLeft -= 1;
+  }
+
+  refreshState() {
+    this.movesLeft = 1;
   }
 }
