@@ -1,18 +1,15 @@
 import SceneKeys from '../consts/SceneKeys';
 import TextureKeys from '../consts/TextureKeys';
-import { Unit } from '../entities/Unit';
 // eslint-disable-next-line import/no-duplicates
 import { screenWidth as width, screenHeight as height } from '../utils/index';
 // eslint-disable-next-line import/no-duplicates
 import { getScale } from '../utils/index';
+// eslint-disable-next-line import/no-cycle
 import { Mech } from '../entities/Mech';
 import { Coords } from '../entities/Coords';
 import MechProperties from '../consts/MechProperties';
 import LevelKeys from '../consts/LevelKeys';
 export default class Game extends Phaser.Scene {
-    // mechs
-    // private MECH_NUM = 3;
-    // private mechs: Array<Unit> = new Array<Unit>(this.MECH_NUM);
     constructor() {
         // 注册场景名称
         super(SceneKeys.Game);
@@ -30,6 +27,9 @@ export default class Game extends Phaser.Scene {
         this.BOARD_SIZE = 8;
         this.board = new Array();
         this.boardWXCoords = [];
+        // mechs
+        this.possibleMoveDestinations = [];
+        this.possibleMoveDestinationsShowerMech = null;
     }
     create() {
         this.drawBackground();
@@ -166,7 +166,8 @@ export default class Game extends Phaser.Scene {
             const yCoord = levelJson.initMechPos[i][1];
             const mechSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.MechTankA)
                 .setOrigin(0.5, 0.5)
-                .setScale(this._scale, this._scale);
+                .setScale(this._scale, this._scale)
+                .setInteractive();
             this.anims.create({
                 key: `mech${i.toString()}`,
                 frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
@@ -192,29 +193,35 @@ export default class Game extends Phaser.Scene {
     }
     // Main game logic
     doTurn() {
-        // oneTurn: alienMove -> showEnvEffects -> playerMove&Attack -> takeEnvEffects -> alienAttack
-        this.doAlienPhase1();
-        this.doEnvPhase1();
-        this.doPlayerPhase();
-        this.doEnvPhase2();
-        this.doAlienPhase2();
+        // oneTurn: alienArise -> alienMove -> showAlienArisePos
+        // -> showEnvEffects -> playerMove&Attack -> takeEnvEffects -> alienAttack
+        this.alienArise();
+        this.alienMove();
+        this.showAlienArisePos();
+        this.showEnvEffects();
+        this.playerMoveAndAttack();
+        this.takeEnvEffects();
+        this.alienAttack();
     }
-    doAlienPhase1() {
+    alienArise() {
     }
-    doEnvPhase1() {
+    alienMove() {
     }
-    doPlayerPhase() {
+    showAlienArisePos() {
     }
-    doEnvPhase2() {
+    showEnvEffects() {
     }
-    doAlienPhase2() {
+    playerMoveAndAttack() {
+    }
+    takeEnvEffects() {
+    }
+    alienAttack() {
     }
     dev() {
-        if (this.board[1][1] instanceof Mech) {
-            this.board[1][1].showPossibleMoveDestinations();
-        }
-        else if (this.board[1][1] instanceof Unit) {
-            // this.board[1][1].showPossibleMoveDestinations();
-        }
+        // if (this.board[1][1] instanceof Mech) {
+        //   this.board[1][1].showPossibleMoveDestinations();
+        // } else if (this.board[1][1] instanceof Unit) {
+        //   // this.board[1][1].showPossibleMoveDestinations();
+        // }
     }
 }

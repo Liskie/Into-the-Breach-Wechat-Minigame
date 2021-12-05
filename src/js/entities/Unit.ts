@@ -69,7 +69,7 @@ export class Unit {
     }
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
-        if (dis[i][j] <= this.maxAp && dis[i][j] != -1) {
+        if (dis[i][j] <= this.maxAp && dis[i][j] !== -1) {
           res[i][j] = true;
         }
       }
@@ -77,6 +77,7 @@ export class Unit {
     res[this.coords.x][this.coords.y] = false;
     return res;
   }
+
   findPathToCoords(toCoords: Coords) {
     /**
      * @params toCoords: Coords Coords of the destination tile.
@@ -106,7 +107,15 @@ export class Unit {
   }
 
   moveTo(des_coords: Coords) {
+    // Remove this unit from current coords of the board
+    this.game.board[this.coords.x][this.coords.y] = null;
+    // Change coords of this unit
     this.coords = des_coords;
+    // Add this unit into the board with new coords
+    this.game.board[des_coords.x][des_coords.y] = this;
+    // Move the sprite to the new coords, this ACTUALLY moves what the player sees on the board
+    const wxCoords = this.game.boardWXCoords[des_coords.x][des_coords.y];
+    this.sprite.setPosition(wxCoords[0], wxCoords[1]);
   }
 
   attack(target: Unit) {
