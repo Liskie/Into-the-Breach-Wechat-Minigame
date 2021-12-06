@@ -3,6 +3,7 @@
 import Game from '../scenes/Game';
 
 import { Coords } from './Coords';
+import UnitProperties from '../consts/UnitProperties';
 
 export class Unit {
   constructor(
@@ -116,7 +117,7 @@ export class Unit {
     // }
     let i = 0;
     this.game.time.addEvent({
-      delay: 20, // ms
+      delay: UnitProperties.MoveDelay, // ms
       callback: () => {
         this.moveStepTo(path[i]);
         i += 1;

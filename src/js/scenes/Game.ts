@@ -53,7 +53,7 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    //设置游戏背景色
+    // 设置游戏背景色
 
     // this.setBackgroundColor();
     this.drawBackground();
