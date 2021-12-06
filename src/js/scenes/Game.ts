@@ -54,7 +54,8 @@ export default class Game extends Phaser.Scene {
     this.buttonEvent();
     this.drawTime();
     this.drawTurn();
-    this.drawbloodEvent(1);
+    // 先屏蔽绘制进度的
+    // this.drawbloodEvent(1);
 
     // Board init
     this.createBoard();
