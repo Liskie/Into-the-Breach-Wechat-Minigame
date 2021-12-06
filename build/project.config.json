@@ -18,6 +18,7 @@
         "checkSiteMap": true,
         "uploadWithSourceMap": true,
         "compileHotReLoad": false,
+        "lazyloadPlaceholderEnable": false,
         "useMultiFrameRuntime": true,
         "useApiHook": true,
         "useApiHostProcess": true,
@@ -27,15 +28,16 @@
             "outputPath": ""
         },
         "enableEngineNative": false,
-        "bundle": true,
         "useIsolateContext": true,
-        "useCompilerModule": true,
-        "userConfirmedUseCompilerModuleSwitch": false,
+        "userConfirmedUseIsolateContext": true,
         "userConfirmedBundleSwitch": true,
         "packNpmManually": false,
         "packNpmRelationList": [],
         "minifyWXSS": true,
-        "useStaticServer": false
+        "disableUseStrict": false,
+        "useStaticServer": false,
+        "showES6CompileOption": false,
+        "useCompilerPlugins": false
     },
     "compileType": "game",
     "libVersion": "2.19.4",

@@ -51,6 +51,4 @@ export default class Game extends Phaser.Scene {
             padding: { left: 20, right: 20, top: 10, bottom: 10 },
         }).setScrollFactor(0).setOrigin(0, 0);
     }
-    update() {
-    }
 }

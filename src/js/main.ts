@@ -29,11 +29,10 @@ export default class Main {
       physics: {
         default: 'arcade', // 重力
         arcade: {
-          gravity: { y: 200 },
           // debug: true,
         },
       },
-      // 注册场景：Preloader -> StartGame->Game -> GameOver
+      // 注册场景：Preloader -> StartGame -> Game -> GameOver
       scene: [Preloader, StartGame, Game],
     };
 

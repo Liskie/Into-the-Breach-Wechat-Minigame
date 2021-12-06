@@ -8,7 +8,13 @@ enum TextureKeys {
   Boold = 'boold',
   EndTurn = 'endTurn',
   Success = 'success',
+  // Mechs
   MechTankA = 'mech_tank_a',
+  // Aliens
+  CarbA = 'carb_a',
+  // Grids
+  ReachableGrid = 'reachableGrid',
+  Building = 'building',
 }
 
 export default TextureKeys;

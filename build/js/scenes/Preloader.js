@@ -1,5 +1,7 @@
 import SceneKeys from '../consts/SceneKeys';
 import TextureKeys from '../consts/TextureKeys';
+import TextureProperties from '../consts/TextureProperties';
+import LevelKeys from '../consts/LevelKeys';
 export default class Game extends Phaser.Scene {
     constructor() {
         // 注册场景名称
@@ -22,7 +24,14 @@ export default class Game extends Phaser.Scene {
         this.load.image(TextureKeys.Sand1, 'images/sand1.png');
         this.load.image(TextureKeys.Boold, 'images/boold.png');
         this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
-        this.load.image(TextureKeys.Success, "images/success.png");
+        this.load.image(TextureKeys.Success, 'images/success.png');
+        this.load.image(TextureKeys.Building, 'images/building.png');
+        // mechs
+        this.load.spritesheet(TextureKeys.MechTankA, 'images/units/player/mech_tank_a.png', { frameWidth: TextureProperties.MechTankAWidth, frameHeight: TextureProperties.MechTankAHeight });
+        // aliens
+        this.load.spritesheet(TextureKeys.CarbA, 'images/units/aliens/carba.png', { frameWidth: TextureProperties.CarbAWidth, frameHeight: TextureProperties.CarbAHeight });
+        // levels
+        this.load.json(LevelKeys.Level1, 'levels/1.json');
         const { width, height } = this.game.scale;
         const style = { font: '18px monospace', fill: '#ffffff' }; // 设置显示文本的样式
         const percentText = this.make.text({

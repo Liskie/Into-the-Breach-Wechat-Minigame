@@ -9,5 +9,12 @@ var TextureKeys;
     TextureKeys["Boold"] = "boold";
     TextureKeys["EndTurn"] = "endTurn";
     TextureKeys["Success"] = "success";
+    // Mechs
+    TextureKeys["MechTankA"] = "mech_tank_a";
+    // Aliens
+    TextureKeys["CarbA"] = "carb_a";
+    // Grids
+    TextureKeys["ReachableGrid"] = "reachableGrid";
+    TextureKeys["Building"] = "building";
 })(TextureKeys || (TextureKeys = {}));
 export default TextureKeys;
