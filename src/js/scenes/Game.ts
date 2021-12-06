@@ -190,50 +190,32 @@ export default class Game extends Phaser.Scene {
   }
 
   createBuilding() {
-    let xCoord = 1;
-    let yCoord = 2;
-    // const key = xCoord * 8 + yCoord;
-    const buildingScale = 0.8;
-    let buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.Building)
-      .setOrigin(0.5, 0.5)
-      .setScale(buildingScale, buildingScale)
-      .setInteractive();
-    this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
-      MechProperties.TankMaxHp, MechProperties.TankMaxHp);
-    xCoord =5;
-    yCoord=7;
-    buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.Building)
-      .setOrigin(0.5, 0.5)
-      .setScale(buildingScale, buildingScale)
-      .setInteractive();
-    this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
-      MechProperties.TankMaxHp, MechProperties.TankMaxHp);
-    xCoord =6;
-    yCoord=4;
-    buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.Building)
-      .setOrigin(0.5, 0.5)
-      .setScale(buildingScale, buildingScale)
-      .setInteractive();
-    this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
-      MechProperties.TankMaxHp, MechProperties.TankMaxHp);
-
-    xCoord =3;
-    yCoord=5;
-    buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.Building)
-      .setOrigin(0.5, 0.5)
-      .setScale(buildingScale, buildingScale)
-      .setInteractive();
-    this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
-      MechProperties.TankMaxHp, MechProperties.TankMaxHp);
-
-    xCoord =4;
-    yCoord=2;
-    buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.Building)
-      .setOrigin(0.5, 0.5)
-      .setScale(buildingScale, buildingScale)
-      .setInteractive();
-    this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
-      MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+    const buildingJson = this.cache.json.get(LevelKeys.Building);
+    for (let i = 0; i < buildingJson.initBuildingPos.length; i++) {
+      const xCoord = buildingJson.initBuildingPos[i][0];
+      const yCoord = buildingJson.initBuildingPos[i][1];
+      if (this.board[xCoord][yCoord] != null) {
+        console.log('建筑和机甲的坐标冲突');
+        continue;
+      }
+      const buildingHScale = 0.8;
+      const buildingMountainScale = 0.7;
+      if (i % 2) {
+        const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingH)
+          .setOrigin(0.5, 0.5)
+          .setScale(buildingHScale, buildingHScale)
+          .setInteractive();
+        this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
+          MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+      } else {
+        const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingMountain)
+          .setOrigin(0.3, 0.5)
+          .setScale(buildingMountainScale, buildingMountainScale)
+          .setInteractive();
+        this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
+          MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+      }
+    }
   }
 
   createBoard() {

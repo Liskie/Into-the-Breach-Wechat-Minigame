@@ -25,11 +25,14 @@ export default class Game extends Phaser.Scene {
         this.load.image(TextureKeys.Boold, 'images/boold.png');
         this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
         this.load.image(TextureKeys.Success, 'images/success.png');
-        this.load.image(TextureKeys.Building, 'images/building.png');
         // mechs
         this.load.spritesheet(TextureKeys.MechTankA, 'images/units/player/mech_tank_a.png', { frameWidth: TextureProperties.MechTankAWidth, frameHeight: TextureProperties.MechTankAHeight });
+        // buildings
+        this.load.image(TextureKeys.BuildingH, 'images/buildings/building.png');
+        this.load.image(TextureKeys.BuildingMountain, 'images/buildings/mountain_0.png');
         // levels
         this.load.json(LevelKeys.Level1, 'levels/1.json');
+        this.load.json(LevelKeys.Building, 'levels/building.json');
         const { width, height } = this.game.scale;
         const style = { font: '18px monospace', fill: '#ffffff' }; // 设置显示文本的样式
         const percentText = this.make.text({

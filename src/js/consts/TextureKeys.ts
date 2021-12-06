@@ -12,7 +12,8 @@ enum TextureKeys {
   MechTankA = 'mech_tank_a',
   // Grids
   ReachableGrid = 'reachableGrid',
-  Building = 'building',
+  BuildingH = 'buildingH',
+  BuildingMountain = 'buildingMountain',
 }
 
 export default TextureKeys;
