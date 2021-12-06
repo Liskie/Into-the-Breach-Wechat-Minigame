@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 export class Coords {
   constructor(public x: number, public y:number) {
     this.x = x;

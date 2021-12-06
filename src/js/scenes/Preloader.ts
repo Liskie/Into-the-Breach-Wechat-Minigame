@@ -31,6 +31,7 @@ export default class Game extends Phaser.Scene {
     this.load.image(TextureKeys.Boold, 'images/boold.png');
     this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
     this.load.image(TextureKeys.Success, 'images/success.png');
+    this.load.image(TextureKeys.Building, 'images/building.png');
 
     // mechs
     this.load.spritesheet(TextureKeys.MechTankA,

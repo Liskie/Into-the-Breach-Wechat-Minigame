@@ -13,5 +13,6 @@ var TextureKeys;
     TextureKeys["MechTankA"] = "mech_tank_a";
     // Grids
     TextureKeys["ReachableGrid"] = "reachableGrid";
+    TextureKeys["Building"] = "building";
 })(TextureKeys || (TextureKeys = {}));
 export default TextureKeys;

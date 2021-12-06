@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 // eslint-disable-next-line import/no-cycle
 import { Unit } from './Unit';
 import { Coords } from './Coords';

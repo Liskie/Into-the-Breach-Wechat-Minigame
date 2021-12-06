@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars,import/no-cycle
 import Game from '../scenes/Game';
 
