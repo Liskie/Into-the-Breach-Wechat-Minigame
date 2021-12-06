@@ -198,18 +198,18 @@ export default class Game extends Phaser.Scene {
         console.log('建筑和机甲的坐标冲突');
         continue;
       }
-      const buildingHScale = 0.8;
-      const buildingMountainScale = 0.7;
+      const buildingHScale = 0.9;
+      const buildingMountainScale = 0.9;
       if (i % 2) {
         const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingH)
-          .setOrigin(0.5, 0.5)
+          .setOrigin(0.5, 0.6)
           .setScale(buildingHScale, buildingHScale)
           .setInteractive();
         this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
           MechProperties.TankMaxHp, MechProperties.TankMaxHp);
       } else {
         const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingMountain)
-          .setOrigin(0.3, 0.5)
+          .setOrigin(0.35, 0.65)
           .setScale(buildingMountainScale, buildingMountainScale)
           .setInteractive();
         this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
