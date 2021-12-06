@@ -13,7 +13,10 @@ var TextureKeys;
     TextureKeys["MechTankA"] = "mech_tank_a";
     // Grids
     TextureKeys["ReachableGrid"] = "reachableGrid";
+    // Buildings
     TextureKeys["BuildingH"] = "buildingH";
     TextureKeys["BuildingMountain"] = "buildingMountain";
+    // Aliens
+    TextureKeys["CarbA"] = "carb_a";
 })(TextureKeys || (TextureKeys = {}));
 export default TextureKeys;

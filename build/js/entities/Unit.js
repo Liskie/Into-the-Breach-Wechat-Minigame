@@ -1,4 +1,5 @@
 import { Coords } from './Coords';
+import UnitProperties from '../consts/UnitProperties';
 export class Unit {
     constructor(game, coords, sprite, maxAp, atkRange, hp, maxHp) {
         this.game = game;
@@ -106,7 +107,7 @@ export class Unit {
         // }
         let i = 0;
         this.game.time.addEvent({
-            delay: 20,
+            delay: UnitProperties.MoveDelay,
             callback: () => {
                 this.moveStepTo(path[i]);
                 i += 1;

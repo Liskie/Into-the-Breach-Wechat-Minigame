@@ -8,11 +8,14 @@ import { screenWidth as width, screenHeight as height } from '../utils/index';
 import { getScale } from '../utils/index';
 // eslint-disable-next-line import/no-cycle
 import { Mech } from '../entities/Mech';
+// eslint-disable-next-line import/no-cycle
 import { Alien } from '../entities/Alien';
+// eslint-disable-next-line import/no-cycle
 import { Carb } from '../entities/Aliens/Carb';
 import { Coords } from '../entities/Coords';
 import MechProperties from '../consts/MechProperties';
 import LevelKeys from '../consts/LevelKeys';
+// eslint-disable-next-line import/no-cycle
 import { Building } from '../entities/Building';
 
 export default class Game extends Phaser.Scene {
@@ -206,6 +209,7 @@ export default class Game extends Phaser.Scene {
       const yCoord = buildingJson.initBuildingPos[i][1];
       if (this.board[xCoord][yCoord] != null) {
         console.log('建筑和机甲的坐标冲突');
+        // eslint-disable-next-line no-continue
         continue;
       }
       const buildingHScale = 0.9;
@@ -314,16 +318,16 @@ export default class Game extends Phaser.Scene {
 
   alienMove() {
     this.aliens = [];
-    for(let i = 0; i < 8; i++){
-      for(let j = 0; j < 8; j++){
-        if(this.board[i][j] instanceof Alien){
-          this.aliens.push(<Alien>this.board[i][j])
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (this.board[i][j] instanceof Alien) {
+          this.aliens.push(<Alien> this.board[i][j]);
           this.aliens[this.aliens.length - 1].atkIntention = -1;
         }
       }
     }
-    for(let i = 0; i < this.aliens.length; i++){
-      console.log(i)
+    for (let i = 0; i < this.aliens.length; i++) {
+      console.log(i);
       this.aliens[i].moveAndPrepareForAttack();
     }
   }
