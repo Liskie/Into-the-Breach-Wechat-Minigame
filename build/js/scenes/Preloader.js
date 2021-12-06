@@ -20,8 +20,8 @@ export default class Game extends Phaser.Scene {
     loadResources() {
         this.load.image(TextureKeys.Ground, 'images/ground.png');
         this.load.image(TextureKeys.Calibration, 'images/calibration.png');
-        this.load.image(TextureKeys.Bg3, 'images/bg3.png');
-        this.load.image(TextureKeys.Sand1, 'images/sand1.png');
+        // this.load.image(TextureKeys.Bg3, 'images/bg3.png');
+        // this.load.image(TextureKeys.Sand1, 'images/sand1.png');
         this.load.image(TextureKeys.Boold, 'images/boold.png');
         this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
         this.load.image(TextureKeys.Success, 'images/success.png');

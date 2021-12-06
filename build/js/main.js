@@ -13,6 +13,7 @@ export default class Main {
             antialias: true,
             width,
             height,
+            backgroundColor: '#0C0C17',
             // @ts-ignore
             parent: null,
             canvas: window.canvas,
@@ -26,7 +27,7 @@ export default class Main {
                 // debug: true,
                 },
             },
-            // 注册场景：Preloader -> StartGame -> Game -> GameOver
+            // 注册场景：Preloader -> StartGame -> Game
             scene: [Preloader, StartGame, Game],
         };
         this.create();

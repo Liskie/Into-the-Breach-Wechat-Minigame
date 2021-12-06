@@ -9,6 +9,7 @@ import { Mech } from '../entities/Mech';
 import { Coords } from '../entities/Coords';
 import MechProperties from '../consts/MechProperties';
 import LevelKeys from '../consts/LevelKeys';
+// eslint-disable-next-line import/no-cycle
 import { Building } from '../entities/Building';
 export default class Game extends Phaser.Scene {
     constructor() {
@@ -35,6 +36,8 @@ export default class Game extends Phaser.Scene {
         this.showerBuilding = null;
     }
     create() {
+        //设置游戏背景色
+        // this.setBackgroundColor();
         this.drawBackground();
         this.drawButton();
         this.buttonEvent();
@@ -56,12 +59,12 @@ export default class Game extends Phaser.Scene {
     drawBackground() {
         this._scale = getScale(width, height);
         const booldScaling = 0.25;
-        const booldBgWidth = 1203 * booldScaling * this._scale;
-        const booldBgHight = 334 * booldScaling * this._scale;
+        const booldBgWidth = 1190 * booldScaling * this._scale;
+        const booldBgHight = 304 * booldScaling * this._scale;
         this.booldBg = this.add.image(this.dotoX, height / 50, TextureKeys.Boold).setDisplaySize(booldBgWidth, booldBgHight).setOrigin(0, 0);
         const successScaling = 0.34;
-        const successBgWidth = 679 * successScaling * this._scale;
-        const successBgHight = 639 * successScaling * this._scale;
+        const successBgWidth = 630 * successScaling * this._scale;
+        const successBgHight = 230 * successScaling * this._scale;
         this.booldBg = this.add.image(this.dotoX, height / 2 - height / 20, TextureKeys.Success).setDisplaySize(successBgWidth, successBgHight).setOrigin(0, 0);
         const scaling = 1;
         const w = 56 * scaling * this._scale;
@@ -94,7 +97,7 @@ export default class Game extends Phaser.Scene {
         const booldScaling = 0.25;
         const booldBgHight = 334 * booldScaling * this._scale;
         const x = (width / 30) * this._scale;
-        const y = (height / 50 + booldBgHight / 1.7) * this._scale;
+        const y = (height / 50 + booldBgHight / 2) * this._scale;
         this.ExitGameLabel = this.add.text(x + this.dotoX, y, '结束回合', {
             fontSize: '20px',
             color: '#ffffff',
