@@ -8,10 +8,11 @@ import { screenWidth as width, screenHeight as height } from '../utils/index';
 import { getScale } from '../utils/index';
 // eslint-disable-next-line import/no-cycle
 import { Mech } from '../entities/Mech';
+import { Alien } from '../entities/Alien';
+import { Carb } from '../entities/Aliens/Carb';
 import { Coords } from '../entities/Coords';
 import MechProperties from '../consts/MechProperties';
 import LevelKeys from '../consts/LevelKeys';
-// eslint-disable-next-line import/no-cycle
 import { Building } from '../entities/Building';
 
 export default class Game extends Phaser.Scene {
@@ -44,6 +45,8 @@ export default class Game extends Phaser.Scene {
   // mechs
   public possibleMoveDestinations: Array<Phaser.GameObjects.Image> = [];
   public possibleMoveDestinationsShowerMech: Mech | null = null;
+  // aliens
+  public aliens: Array<Alien> = [];
   // buildings
   public showerBuilding: Mech | null = null;
 
@@ -67,10 +70,13 @@ export default class Game extends Phaser.Scene {
     // Board init
     this.createBoard();
     this.createMechs();
+    this.createAliens();
 
     this.createBuilding();
     // Development
     this.dev();
+
+    this.alienMove();
   }
 
   update() {
@@ -267,6 +273,28 @@ export default class Game extends Phaser.Scene {
       .destroy();
   }
 
+  createAliens() {
+    const carbScale = 0.8;
+    const levelJson = this.cache.json.get(LevelKeys.Level1);
+    for (let i = 0; i < levelJson.initAlienPos.length; i++) {
+      const xCoord = levelJson.initAlienPos[i][0];
+      const yCoord = levelJson.initAlienPos[i][1];
+      const alienSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.CarbA)
+        .setOrigin(0.5, 0.5)
+        .setScale(carbScale, carbScale)
+        .setInteractive();
+      this.anims.create({
+        key: `carb${i.toString()}`,
+        frames: this.anims.generateFrameNumbers(TextureKeys.CarbA, { start: 0, end: 3 }),
+        frameRate: 4,
+        repeat: -1
+      });
+      alienSprite.anims.play(`carb${i.toString()}`);
+      this.board[xCoord][yCoord] = new Carb(this, new Coords(xCoord, yCoord), alienSprite,
+        MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+    }
+  }
+
   // Main game logic
   doTurn() {
     // oneTurn: alienArise -> alienMove -> showAlienArisePos
@@ -285,7 +313,19 @@ export default class Game extends Phaser.Scene {
   }
 
   alienMove() {
-
+    this.aliens = [];
+    for(let i = 0; i < 8; i++){
+      for(let j = 0; j < 8; j++){
+        if(this.board[i][j] instanceof Alien){
+          this.aliens.push(<Alien>this.board[i][j])
+          this.aliens[this.aliens.length - 1].atkIntention = -1;
+        }
+      }
+    }
+    for(let i = 0; i < this.aliens.length; i++){
+      console.log(i)
+      this.aliens[i].moveAndPrepareForAttack();
+    }
   }
 
   showAlienArisePos() {

@@ -33,7 +33,7 @@ export default class Main {
           // debug: true,
         },
       },
-      // 注册场景：Preloader -> StartGame -> Game
+      // 注册场景：Preloader -> StartGame -> Game -> GameOver
       scene: [Preloader, StartGame, Game],
     };
 
