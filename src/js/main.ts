@@ -19,6 +19,7 @@ export default class Main {
       antialias: true, // 开启抗锯齿
       width,
       height,
+      backgroundColor: '#0C0C17',
       // @ts-ignore
       parent: null, // 游戏容器
       canvas: window.canvas,
@@ -29,11 +30,10 @@ export default class Main {
       physics: {
         default: 'arcade', // 重力
         arcade: {
-          gravity: { y: 200 },
           // debug: true,
         },
       },
-      // 注册场景：Preloader -> StartGame->Game -> GameOver
+      // 注册场景：Preloader -> StartGame -> Game -> GameOver
       scene: [Preloader, StartGame, Game],
     };
 

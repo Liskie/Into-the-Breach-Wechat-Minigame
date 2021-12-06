@@ -1,13 +1,26 @@
 import SceneKeys from '../consts/SceneKeys';
 import TextureKeys from '../consts/TextureKeys';
+// eslint-disable-next-line import/no-cycle
 import { Unit } from '../entities/Unit';
 // eslint-disable-next-line import/no-duplicates
 import { screenWidth as width, screenHeight as height } from '../utils/index';
 // eslint-disable-next-line import/no-duplicates
 import { getScale } from '../utils/index';
+// eslint-disable-next-line import/no-cycle
+import { Mech } from '../entities/Mech';
+// eslint-disable-next-line import/no-cycle
+import { Alien } from '../entities/Alien';
+// eslint-disable-next-line import/no-cycle
+import { Carb } from '../entities/Aliens/Carb';
+import { Coords } from '../entities/Coords';
+import MechProperties from '../consts/MechProperties';
+import LevelKeys from '../consts/LevelKeys';
+// eslint-disable-next-line import/no-cycle
+import { Building } from '../entities/Building';
+import UnitProperties from '../consts/UnitProperties';
 
 export default class Game extends Phaser.Scene {
-  private _scale!: number;
+  public _scale!: number;
   // 二维地图的索引
   public map: Array<Array<number>> = new Array<Array<number>>();
   // 二维地图对应的方格
@@ -30,25 +43,44 @@ export default class Game extends Phaser.Scene {
   private booldNum:number = 4;
 
   // board that contains the units
-  public board: Array<Array<Unit>> = new Array<Array<Unit>>();
+  public BOARD_SIZE = 8;
+  public board: Array<Array<Unit | Building | null>> = new Array<Array<Unit>>();
+  public boardWXCoords: Array<Array<Array<number>>> = [];
+  // mechs
+  public possibleMoveDestinations: Array<Phaser.GameObjects.Image> = [];
+  public possibleMoveDestinationsShowerMech: Mech | null = null;
+  // aliens
+  public aliens: Array<Alien> = [];
+  // buildings
+  public showerBuilding: Mech | null = null;
 
   constructor() {
     // 注册场景名称
     super(SceneKeys.Game);
   }
 
-  init() {
-    const hello: string = '有一说一涛神真牛逼';
-    console.log(hello);
-  }
-
   create() {
+    // 设置游戏背景色
+
+    // this.setBackgroundColor();
     this.drawBackground();
     this.drawButton();
     this.buttonEvent();
     this.drawTime();
     this.drawTurn();
-    this.drawbloodEvent(1);
+    // 先屏蔽绘制进度的
+    // this.drawbloodEvent(1);
+
+    // Board init
+    this.createBoard();
+    this.createMechs();
+    this.createAliens();
+
+    this.createBuilding();
+    // Development
+    this.dev();
+
+    this.alienMove();
   }
 
   update() {
@@ -59,13 +91,13 @@ export default class Game extends Phaser.Scene {
   drawBackground() {
     this._scale = getScale(width, height);
     const booldScaling = 0.25;
-    const booldBgWidth = 1203 * booldScaling * this._scale;
-    const booldBgHight = 334 * booldScaling * this._scale;
+    const booldBgWidth = 1190 * booldScaling * this._scale;
+    const booldBgHight = 304 * booldScaling * this._scale;
     this.booldBg = this.add.image(this.dotoX, height / 50, TextureKeys.Boold).setDisplaySize(booldBgWidth, booldBgHight).setOrigin(0, 0);
 
     const successScaling = 0.34;
-    const successBgWidth = 679 * successScaling * this._scale;
-    const successBgHight = 639 * successScaling * this._scale;
+    const successBgWidth = 630 * successScaling * this._scale;
+    const successBgHight = 230 * successScaling * this._scale;
     this.booldBg = this.add.image(this.dotoX, height / 2 - height / 20, TextureKeys.Success).setDisplaySize(successBgWidth, successBgHight).setOrigin(0, 0);
 
     const scaling = 1;
@@ -74,7 +106,7 @@ export default class Game extends Phaser.Scene {
     const startX = width / 2 + width / 7;
     const startY = height / 8;
     const dx = w / 2;
-    const dy = h / 3.5;
+    const dy = 21 * this._scale;
     for (let i = 0; i < 8; i++) {
       const x: number = startX - i * dx;
       this.mapBloack.push(this.add.image(x, startY + i * dy, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5));
@@ -85,6 +117,15 @@ export default class Game extends Phaser.Scene {
         this.map.push([x + (j * w) / 2, y]);
       }
     }
+
+    for (let i = 0; i < this.BOARD_SIZE; i++) {
+      this.boardWXCoords.push([]);
+      for (let j = 0; j < this.BOARD_SIZE; j++) {
+        const tempo: Array<number> = this.map[i * this.BOARD_SIZE + j];
+        tempo[1] -= 16 * this._scale;
+        this.boardWXCoords[i].push(tempo);
+      }
+    }
   }
 
   drawButton() {
@@ -92,7 +133,7 @@ export default class Game extends Phaser.Scene {
     const booldScaling = 0.25;
     const booldBgHight = 334 * booldScaling * this._scale;
     const x = (width / 30) * this._scale;
-    const y = (height / 50 + booldBgHight / 1.7) * this._scale;
+    const y = (height / 50 + booldBgHight / 2) * this._scale;
     this.ExitGameLabel = this.add.text(x + this.dotoX, y, '结束回合', {
       fontSize: '20px',
       color: '#ffffff',
@@ -160,5 +201,176 @@ export default class Game extends Phaser.Scene {
     // graphics.fillStyle(0xffffff);
     graphics.fillStyle(0x0C0C17);
     graphics.fillRect(x - i * dx, y, booldBgWidth / 30, booldBgHight / 4);
+  }
+
+  createBuilding() {
+    const buildingJson = this.cache.json.get(LevelKeys.Building);
+    for (let i = 0; i < buildingJson.initBuildingPos.length; i++) {
+      const xCoord = buildingJson.initBuildingPos[i][0];
+      const yCoord = buildingJson.initBuildingPos[i][1];
+      if (this.board[xCoord][yCoord] != null) {
+        console.log('建筑和机甲的坐标冲突');
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      const buildingHScale = 0.9;
+      const buildingMountainScale = 0.9;
+      if (i % 2) {
+        const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingH)
+          .setOrigin(0.5, 0.6)
+          .setScale(buildingHScale, buildingHScale)
+          .setInteractive();
+        this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
+          MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+      } else {
+        const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingMountain)
+          .setOrigin(0.35, 0.65)
+          .setScale(buildingMountainScale, buildingMountainScale)
+          .setInteractive();
+        this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite,
+          MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+      }
+    }
+  }
+
+  createBoard() {
+    for (let i = 0; i < this.BOARD_SIZE; i++) {
+      const tempo = new Array<Unit | null>();
+      for (let j = 0; j < this.BOARD_SIZE; j++) {
+        tempo.push(null);
+      }
+      this.board.push(tempo);
+    }
+  }
+
+  createMechs() {
+    const levelJson = this.cache.json.get(LevelKeys.Level1);
+    for (let i = 0; i < levelJson.initMechPos.length; i++) {
+      const xCoord = levelJson.initMechPos[i][0];
+      const yCoord = levelJson.initMechPos[i][1];
+      const mechSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.MechTankA)
+        .setOrigin(0.5, 0.5)
+        .setScale(this._scale, this._scale)
+        .setInteractive();
+      this.anims.create({
+        key: `mech${i.toString()}`,
+        frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
+        frameRate: 3,
+        repeat: -1
+      });
+      mechSprite.anims.play(`mech${i.toString()}`);
+      this.board[xCoord][yCoord] = new Mech(this, new Coords(xCoord, yCoord), mechSprite,
+        MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+    }
+
+    // Generate reachable grid texture
+    this.add.graphics()
+      .fillStyle(0x13E92A)
+      .fillPoints([
+        new Phaser.Geom.Point(28.5, 0),
+        new Phaser.Geom.Point(0, 21.5),
+        new Phaser.Geom.Point(28.5, 42),
+        new Phaser.Geom.Point(56, 21.5)
+      ], true, true)
+      .setScale(this._scale)
+      .setAlpha(0.3)
+      .generateTexture(TextureKeys.ReachableGrid, 56, 42)
+      .destroy();
+  }
+
+  createAliens() {
+    const carbScale = 0.8;
+    const levelJson = this.cache.json.get(LevelKeys.Level1);
+    for (let i = 0; i < levelJson.initAlienPos.length; i++) {
+      const xCoord = levelJson.initAlienPos[i][0];
+      const yCoord = levelJson.initAlienPos[i][1];
+      const alienSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.CarbA)
+        .setOrigin(0.5, 0.5)
+        .setScale(carbScale, carbScale)
+        .setInteractive();
+      this.anims.create({
+        key: `carb${i.toString()}`,
+        frames: this.anims.generateFrameNumbers(TextureKeys.CarbA, { start: 0, end: 3 }),
+        frameRate: 4,
+        repeat: -1
+      });
+      alienSprite.anims.play(`carb${i.toString()}`);
+      this.board[xCoord][yCoord] = new Carb(this, new Coords(xCoord, yCoord), alienSprite,
+        MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+    }
+  }
+
+  // Main game logic
+  doTurn() {
+    // oneTurn: alienArise -> alienMove -> showAlienArisePos
+    // -> showEnvEffects -> playerMove&Attack -> takeEnvEffects -> alienAttack
+    this.alienArise();
+    this.alienMove();
+    this.showAlienArisePos();
+    this.showEnvEffects();
+    this.playerMoveAndAttack();
+    this.takeEnvEffects();
+    this.alienAttack();
+  }
+
+  alienArise() {
+
+  }
+
+  alienMove() {
+    this.aliens = [];
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (this.board[i][j] instanceof Alien) {
+          this.aliens.push(<Alien> this.board[i][j]);
+          this.aliens[this.aliens.length - 1].atkIntention = -1;
+        }
+      }
+    }
+    /*
+    for (let i = 0; i < this.aliens.length; i++) {
+      console.log(i);
+      this.aliens[i].moveAndPrepareForAttack();
+    }
+    */
+
+    let i = 0;
+    this.time.addEvent({
+      callback: () => {
+        this.aliens[i].moveAndPrepareForAttack();
+        i++;
+      },
+      delay: UnitProperties.MoveDelay * 10, // ms
+      callbackScope: this,
+      repeat: this.aliens.length - 1
+    });
+  }
+
+  showAlienArisePos() {
+
+  }
+
+  showEnvEffects() {
+
+  }
+
+  playerMoveAndAttack() {
+
+  }
+
+  takeEnvEffects() {
+
+  }
+
+  alienAttack() {
+
+  }
+
+  dev() {
+    // if (this.board[1][1] instanceof Mech) {
+    //   this.board[1][1].showPossibleMoveDestinations();
+    // } else if (this.board[1][1] instanceof Unit) {
+    //   // this.board[1][1].showPossibleMoveDestinations();
+    // }
   }
 }
