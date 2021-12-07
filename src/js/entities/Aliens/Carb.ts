@@ -17,7 +17,7 @@ export class Carb extends Alien {
     super(game, coords, sprite, maxAp, atkRange, hp, maxHp);
   }
   public shootPos = [[0, 0], [0, 1], [0, -1], [1, 0], [-1, 0]];
-  // 给定当前的坐标以及目标坐标，判断按照当前的攻击意图，该怪能不能打到目标
+  // 给定目标坐标，判断按照当前的攻击意图，该怪能不能打到目标
   ifAttackable(tgtCoords : Coords){
     if(this.atkIntention == -1){
       return false;

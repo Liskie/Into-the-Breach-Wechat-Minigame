@@ -19,7 +19,7 @@ export class Alien extends Unit {
   }
   // 攻击意图标识
   public atkIntention: number = -1;
-  // 给定当前的坐标以及目标坐标，判断按照当前的攻击意图，该怪能不能打到目标
+  // 给定目标坐标，判断按照当前的攻击意图，该怪能不能打到目标
   ifAttackable(tgtCoords : Coords){
     return false;
   }

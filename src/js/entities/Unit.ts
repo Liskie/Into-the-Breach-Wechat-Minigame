@@ -139,8 +139,36 @@ export class Unit {
     this.sprite.setPosition(wxCoords[0], wxCoords[1]);
   }
 
+  dead(){
+    this.game.board[this.coords.x][this.coords.y] = null;
+  }
+  beAttacked(damage: number){
+    this.hp -= damage;
+    if(this.hp <= 0){
+      this.dead();
+    }
+  }
   attack(target: Unit) {
-    target.hp -= 1;
+    target.beAttacked(1);
+  }
+  push(dtCoords: Coords){
+    const tgtCoords = new Coords(this.coords.x + dtCoords.x, this.coords.y + dtCoords.y);
+    if(tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0){
+      return;
+    }
+    if(this.game.board[tgtCoords.x][tgtCoords.y] == null){
+      this.moveTo(tgtCoords);
+      return;
+    }
+    else{
+      this.beAttacked(1);
+      if (this.game.board[tgtCoords.x][tgtCoords.x] instanceof Unit){
+        (<Unit>this.game.board[tgtCoords.x][tgtCoords.x]).beAttacked(1);
+      }
+      else{
+        
+      }
+    }
   }
 
   refreshState() {
