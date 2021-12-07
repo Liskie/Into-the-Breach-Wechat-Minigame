@@ -9,7 +9,7 @@ export default class Music {
         instance = this;
         this.bgmAudio = new Audio();
         this.bgmAudio.loop = true;
-        this.bgmAudio.src = 'audio/bgm.ogg';
+        this.bgmAudio.src = 'audio/bgm.mp3';
         this.playBgm();
     }
     playBgm() {

@@ -23,13 +23,13 @@ export default class Game extends Phaser.Scene {
         // 二维地图的索引
         this.map = new Array();
         // 二维地图对应的方格
-        this.mapBloack = new Array();
+        this.mapBlock = new Array();
         this.gameTime = new Date().getTime();
         // 游戏轮数
         this.Turn = 5;
         this.dotoX = 30;
         // 剩余血量
-        this.booldNum = 4;
+        this.bloodNum = 4;
         // board that contains the units
         this.BOARD_SIZE = 8;
         this.board = new Array();
@@ -67,14 +67,14 @@ export default class Game extends Phaser.Scene {
     }
     drawBackground() {
         this._scale = getScale(width, height);
-        const booldScaling = 0.25;
-        const booldBgWidth = 1190 * booldScaling * this._scale;
-        const booldBgHight = 304 * booldScaling * this._scale;
-        this.booldBg = this.add.image(this.dotoX, height / 50, TextureKeys.Boold).setDisplaySize(booldBgWidth, booldBgHight).setOrigin(0, 0);
+        const bloodScaling = 0.25;
+        const bloodBgWidth = 1190 * bloodScaling * this._scale;
+        const bloodBgHight = 304 * bloodScaling * this._scale;
+        this.bloodBg = this.add.image(this.dotoX, height / 50, TextureKeys.blood).setDisplaySize(bloodBgWidth, bloodBgHight).setOrigin(0, 0);
         const successScaling = 0.34;
         const successBgWidth = 630 * successScaling * this._scale;
         const successBgHight = 230 * successScaling * this._scale;
-        this.booldBg = this.add.image(this.dotoX, height / 2 - height / 20, TextureKeys.Success).setDisplaySize(successBgWidth, successBgHight).setOrigin(0, 0);
+        this.bloodBg = this.add.image(this.dotoX, height / 2 - height / 20, TextureKeys.Success).setDisplaySize(successBgWidth, successBgHight).setOrigin(0, 0);
         const scaling = 1;
         const w = 56 * scaling * this._scale;
         const h = 74 * scaling * this._scale;
@@ -84,11 +84,11 @@ export default class Game extends Phaser.Scene {
         const dy = 21 * this._scale;
         for (let i = 0; i < 8; i++) {
             const x = startX - i * dx;
-            this.mapBloack.push(this.add.image(x, startY + i * dy, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5));
+            this.mapBlock.push(this.add.image(x, startY + i * dy, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5));
             this.map.push([x, startY + i * dy]);
             for (let j = 1; j < 8; ++j) {
                 const y = startY + i * dy + j * dy;
-                this.mapBloack.push(this.add.image(x + (j * w) / 2, y, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5));
+                this.mapBlock.push(this.add.image(x + (j * w) / 2, y, TextureKeys.Ground).setDisplaySize(w, h).setOrigin(0.5, 0.5));
                 this.map.push([x + (j * w) / 2, y]);
             }
         }
@@ -103,10 +103,10 @@ export default class Game extends Phaser.Scene {
     }
     drawButton() {
         this._scale = getScale(width, height);
-        const booldScaling = 0.25;
-        const booldBgHight = 334 * booldScaling * this._scale;
+        const bloodScaling = 0.25;
+        const bloodBgHight = 334 * bloodScaling * this._scale;
         const x = (width / 30) * this._scale;
-        const y = (height / 50 + booldBgHight / 2) * this._scale;
+        const y = (height / 50 + bloodBgHight / 2) * this._scale;
         this.ExitGameLabel = this.add.text(x + this.dotoX, y, '结束回合', {
             fontSize: '20px',
             color: '#ffffff',
@@ -125,7 +125,7 @@ export default class Game extends Phaser.Scene {
         const successScaling = 0.34;
         const successBgWidth = 679 * successScaling * this._scale;
         const successBgHight = 639 * successScaling * this._scale;
-        // this.booldBg = this.add.image(0, height / 2 - height / 20, TextureKeys.Success).setDisplaySize(successBgWidth, successBgHight).setOrigin(0, 0);
+        // this.bloodBg = this.add.image(0, height / 2 - height / 20, TextureKeys.Success).setDisplaySize(successBgWidth, successBgHight).setOrigin(0, 0);
         const x = successBgWidth / 2;
         const y = height / 2 - height / 20 + successBgHight / 40;
         this.gameTimeLabel = this.add.text(x + this.dotoX, y, '00:00', {
@@ -138,7 +138,7 @@ export default class Game extends Phaser.Scene {
         const successScaling = 0.34;
         const successBgWidth = 679 * successScaling * this._scale;
         const successBgHight = 639 * successScaling * this._scale;
-        // this.booldBg = this.add.image(0, height / 2 - height / 20, TextureKeys.Success).setDisplaySize(successBgWidth, successBgHight).setOrigin(0, 0);
+        // this.bloodBg = this.add.image(0, height / 2 - height / 20, TextureKeys.Success).setDisplaySize(successBgWidth, successBgHight).setOrigin(0, 0);
         const x = successBgWidth / 3.2;
         const y = height / 2 + successBgHight / 8;
         this.gameTurnLabel = this.add.text(x + this.dotoX, y, this.Turn.toString(), {
@@ -156,16 +156,16 @@ export default class Game extends Phaser.Scene {
     }
     drawbloodEvent(i) {
         this._scale = getScale(width, height);
-        const booldScaling = 0.25;
-        const booldBgWidth = 1203 * booldScaling * this._scale;
-        const booldBgHight = 334 * booldScaling * this._scale;
-        const x = this.dotoX + booldBgWidth / 2 + booldBgWidth / 20 - 2;
-        const y = height / 50 + booldBgHight / 9;
-        const dx = booldBgWidth / 30;
+        const bloodScaling = 0.25;
+        const bloodBgWidth = 1203 * bloodScaling * this._scale;
+        const bloodBgHight = 334 * bloodScaling * this._scale;
+        const x = this.dotoX + bloodBgWidth / 2 + bloodBgWidth / 20 - 2;
+        const y = height / 50 + bloodBgHight / 9;
+        const dx = bloodBgWidth / 30;
         const graphics = this.add.graphics();
         // graphics.fillStyle(0xffffff);
         graphics.fillStyle(0x0C0C17);
-        graphics.fillRect(x - i * dx, y, booldBgWidth / 30, booldBgHight / 4);
+        graphics.fillRect(x - i * dx, y, bloodBgWidth / 30, bloodBgHight / 4);
     }
     createBuilding() {
         const buildingJson = this.cache.json.get(LevelKeys.Building);
