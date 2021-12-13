@@ -5,7 +5,7 @@ enum TextureKeys {
   Calibration = 'calibration',
   Bg3 = 'bg3',
   Sand1 = 'sand1',
-  Boold = 'boold',
+  Blood = 'blood',
   EndTurn = 'endTurn',
   Success = 'success',
   // Mechs
@@ -17,6 +17,7 @@ enum TextureKeys {
   BuildingMountain = 'buildingMountain',
   // Aliens
   CarbA = 'carb_a',
+  Building_B_collapse = 'building_B_collapse',
 }
 
 export default TextureKeys;

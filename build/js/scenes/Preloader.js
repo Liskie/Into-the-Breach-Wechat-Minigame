@@ -20,7 +20,7 @@ export default class Game extends Phaser.Scene {
     loadResources() {
         this.load.image(TextureKeys.Ground, 'images/ground.png');
         this.load.image(TextureKeys.Calibration, 'images/calibration.png');
-        this.load.image(TextureKeys.Boold, 'images/boold.png');
+        this.load.image(TextureKeys.Blood, 'images/blood.png');
         this.load.image(TextureKeys.EndTurn, 'images/endTurn.png');
         this.load.image(TextureKeys.Success, 'images/success.png');
         // mechs
@@ -28,6 +28,7 @@ export default class Game extends Phaser.Scene {
         // buildings
         this.load.image(TextureKeys.BuildingH, 'images/buildings/building.png');
         this.load.image(TextureKeys.BuildingMountain, 'images/buildings/mountain_0.png');
+        this.load.spritesheet(TextureKeys.Building_B_collapse, 'images/buildings/building_B_collapse.png', { frameWidth: TextureProperties.Building_B_collapseWidth, frameHeight: TextureProperties.Building_B_collapseHeight });
         // aliens
         this.load.spritesheet(TextureKeys.CarbA, 'images/units/aliens/carba.png', { frameWidth: TextureProperties.CarbAWidth, frameHeight: TextureProperties.CarbAHeight });
         // levels

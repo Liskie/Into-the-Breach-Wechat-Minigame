@@ -6,7 +6,7 @@ var TextureKeys;
     TextureKeys["Calibration"] = "calibration";
     TextureKeys["Bg3"] = "bg3";
     TextureKeys["Sand1"] = "sand1";
-    TextureKeys["Boold"] = "boold";
+    TextureKeys["Blood"] = "blood";
     TextureKeys["EndTurn"] = "endTurn";
     TextureKeys["Success"] = "success";
     // Mechs
@@ -18,5 +18,6 @@ var TextureKeys;
     TextureKeys["BuildingMountain"] = "buildingMountain";
     // Aliens
     TextureKeys["CarbA"] = "carb_a";
+    TextureKeys["Building_B_collapse"] = "building_B_collapse";
 })(TextureKeys || (TextureKeys = {}));
 export default TextureKeys;

@@ -10,6 +10,7 @@ export class Building {
     public sprite: Phaser.Physics.Arcade.Sprite,
     public hp: number,
     public maxHp: number,
+    public ruinFlag: boolean = false,
   ) {
     // super(game, coords, sprite, hp, maxHp);
     this.game = game;
@@ -17,5 +18,6 @@ export class Building {
     this.sprite = sprite;
     this.hp = hp;
     this.maxHp = maxHp;
+    this.ruinFlag = ruinFlag;
   }
 }

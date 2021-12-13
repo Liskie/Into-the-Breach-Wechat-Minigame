@@ -70,7 +70,7 @@ export default class Game extends Phaser.Scene {
         const bloodScaling = 0.25;
         const bloodBgWidth = 1190 * bloodScaling * this._scale;
         const bloodBgHight = 304 * bloodScaling * this._scale;
-        this.bloodBg = this.add.image(this.dotoX, height / 50, TextureKeys.blood).setDisplaySize(bloodBgWidth, bloodBgHight).setOrigin(0, 0);
+        this.bloodBg = this.add.image(this.dotoX, height / 50, TextureKeys.Blood).setDisplaySize(bloodBgWidth, bloodBgHight).setOrigin(0, 0);
         const successScaling = 0.34;
         const successBgWidth = 630 * successScaling * this._scale;
         const successBgHight = 230 * successScaling * this._scale;
@@ -177,21 +177,41 @@ export default class Game extends Phaser.Scene {
                 // eslint-disable-next-line no-continue
                 continue;
             }
-            const buildingHScale = 0.9;
+            const buildingHScale = 1;
             const buildingMountainScale = 0.9;
             if (i % 2) {
-                const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingH)
-                    .setOrigin(0.5, 0.6)
+                // const mechSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.MechTankA)
+                //   .setOrigin(0.5, 0.5)
+                //   .setScale(this._scale, this._scale)
+                //   .setInteractive();
+                // this.anims.create({
+                //   key: `mech${i.toString()}`,
+                //   frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
+                //   frameRate: 3,
+                //   repeat: -1
+                // });
+                // mechSprite.anims.play(`mech${i.toString()}`);
+                // this.board[xCoord][yCoord] = new Mech(this, new Coords(xCoord, yCoord), mechSprite,
+                //   MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+                const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.Building_B_collapse)
+                    .setOrigin(0.45, 0.55)
                     .setScale(buildingHScale, buildingHScale)
                     .setInteractive();
-                this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+                this.anims.create({
+                    key: `buildingSprite${i.toString()}`,
+                    frames: this.anims.generateFrameNumbers(TextureKeys.Building_B_collapse, { start: 0, end: 11 }),
+                    frameRate: 4,
+                    repeat: -1
+                });
+                buildingSprite.anims.play(`buildingSprite${i.toString()}`);
+                this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite, MechProperties.TankMaxHp, MechProperties.TankMaxHp, true);
             }
             else {
                 const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingMountain)
                     .setOrigin(0.35, 0.65)
                     .setScale(buildingMountainScale, buildingMountainScale)
                     .setInteractive();
-                this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+                this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite, MechProperties.TankMaxHp, MechProperties.TankMaxHp, false);
             }
         }
     }
