@@ -5,6 +5,7 @@ import { screenWidth as width, screenHeight as height } from './utils/index';
 import Preloader from './scenes/Preloader';
 import Game from './scenes/Game';
 import StartGame from './scenes/StartGame';
+import Music from './runtime/music';
 export default class Main {
     constructor() {
         this.config = {};
@@ -35,6 +36,6 @@ export default class Main {
     create() {
         // 创建 phaser游戏s
         new Phaser.Game(this.config);
-        // new Music();
+        new Music();
     }
 }

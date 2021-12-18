@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-cycle
 import { Alien } from '../Alien';
 import { Coords } from '../Coords';
+import { Building } from '../Building';
 export class Carb extends Alien {
     constructor(game, coords, sprite, maxAp, atkRange, hp, maxHp) {
         super(game, coords, sprite, maxAp, atkRange, hp, maxHp);
@@ -81,7 +82,7 @@ export class Carb extends Alien {
                     this.atkIntention = k;
                     let atkPos = this.getAttackPos(tcd);
                     if (atkPos.x >= 0 && atkPos.y >= 0 && atkPos.x < 8 && atkPos.y < 8) {
-                        if (!(this.game.board[i][j] instanceof Alien)) {
+                        if ((!(this.game.board[i][j] instanceof Alien)) && ((!(this.game.board[i][j] instanceof Building)) || this.game.board[i][j].ruinFlag)) {
                             let tc = [i, j, k];
                             choice.push(tc);
                         }
@@ -102,5 +103,8 @@ export class Carb extends Alien {
     }
     // 怪物攻击
     attack() {
+    }
+    dead() {
+        this.game.dead(this);
     }
 }
