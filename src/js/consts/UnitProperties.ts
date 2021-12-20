@@ -1,5 +1,5 @@
 enum UnitProperties {
-  MoveDelay = 30,
+  MoveDelay = 50,
 }
 
 export default UnitProperties;

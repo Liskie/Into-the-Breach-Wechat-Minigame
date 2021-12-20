@@ -5,6 +5,8 @@ import { Coords } from './Coords';
 // eslint-disable-next-line import/no-cycle
 import Game from '../scenes/Game';
 import TextureKeys from '../consts/TextureKeys';
+import MechProperties from '../consts/MechProperties';
+import UnitProperties from '../consts/UnitProperties';
 
 export class Mech extends Unit {
   constructor(
@@ -15,12 +17,12 @@ export class Mech extends Unit {
     public atkRange: number,
     public hp: number,
     public maxHp: number,
-    public movesLeft: number = 5
+    public movesLeft: number = 1
   ) {
     super(game, coords, sprite, maxAp, atkRange, hp, maxHp);
-
-    // Show/clear move destinations on touch
-    this.sprite.on(Phaser.Input.Events.POINTER_DOWN, () => {
+  }
+  onClick(){
+    if(this.game.isPlayerTurn && this.hp > 0){
       if (this.game.possibleMoveDestinations.length === 0) {
         this.showPossibleMoveDestinations();
         this.game.possibleMoveDestinationsShowerMech = this;
@@ -32,7 +34,27 @@ export class Mech extends Unit {
         this.clearMoveDestinations();
         this.game.possibleMoveDestinationsShowerMech = null;
       }
+    }
+  }
+  spriteLink(){
+    // Show/clear move destinations on touch
+    this.sprite.on(Phaser.Input.Events.POINTER_DOWN, () => {
+      this.onClick();
     });
+  }
+
+  static newUnit(game: Game, coords: Coords){
+    const sprite = Mech.getSprite(game, coords);
+    return new Mech(game, coords, sprite,
+      MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+  }
+  static getSprite(game: Game, coords: Coords){
+    const mechSprite = game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.MechTankA)
+    .setOrigin(0.5, 0.5)
+    .setScale(game._scale, game._scale)
+    .setInteractive();
+    mechSprite.anims.play(`mech-normal`);
+    return mechSprite;
   }
 
   clearMoveDestinations() {
@@ -46,6 +68,9 @@ export class Mech extends Unit {
   }
 
   showPossibleMoveDestinations() {
+    if(this.movesLeft < 1){
+      return;
+    }
     this.clearMoveDestinations();
     const reachMat = this.findPossibleMoveDestinations();
     for (let i = 0; i < this.game.BOARD_SIZE; i++) {
@@ -58,7 +83,16 @@ export class Mech extends Unit {
             .setInteractive();
           this.game.possibleMoveDestinations.push(grid);
           grid.on(Phaser.Input.Events.POINTER_DOWN, () => {
+            this.game.isPlayerTurn = false;
             this.moveTo(new Coords(i, j));
+            this.game.time.addEvent({
+              callback: () => {
+                this.game.isPlayerTurn = true;
+              },
+              delay: UnitProperties.MoveDelay * 12, // ms
+              callbackScope: this,
+              repeat: 0
+            });
           });
         }
       }
@@ -77,5 +111,11 @@ export class Mech extends Unit {
 
   refreshState() {
     this.movesLeft = 1;
+  }
+  dead(){
+    this.game.dead(this);
+  }
+  copySprite(): Phaser.Physics.Arcade.Sprite {
+    return Mech.getSprite(this.game, this.coords);
   }
 }

@@ -33,21 +33,40 @@ export default class Game extends Phaser.Scene {
     this.load.image(TextureKeys.Success, 'images/success.png');
 
     // mechs
+    this.load.image(TextureKeys.MechTankDeath, 'images/units/player/mech_tank_broken.png');
     this.load.spritesheet(TextureKeys.MechTankA,
       'images/units/player/mech_tank_a.png',
       { frameWidth: TextureProperties.MechTankAWidth, frameHeight: TextureProperties.MechTankAHeight });
-
-    // buildings
-    this.load.image(TextureKeys.BuildingH, 'images/buildings/building.png');
-    this.load.image(TextureKeys.BuildingMountain, 'images/buildings/mountain_0.png');
-    this.load.spritesheet(TextureKeys.Building_B_collapse,
-      'images/buildings/building_B_collapse.png',
-      { frameWidth: TextureProperties.Building_B_collapseWidth, frameHeight: TextureProperties.Building_B_collapseHeight });
 
     // aliens
     this.load.spritesheet(TextureKeys.CarbA,
       'images/units/aliens/carba.png',
       { frameWidth: TextureProperties.CarbAWidth, frameHeight: TextureProperties.CarbAHeight });
+    this.load.spritesheet(TextureKeys.CarbDeath,
+      'images/units/aliens/carb_death.png',
+      { frameWidth: TextureProperties.CarbDeathWidth, frameHeight: TextureProperties.CarbDeathHeight });
+    this.load.spritesheet(TextureKeys.CarbEmerge,
+      'images/units/aliens/carb_emerge.png',
+      { frameWidth: TextureProperties.CarbEmergeWidth, frameHeight: TextureProperties.CarbEmergeHeight });
+
+    // buildings
+    this.load.image(TextureKeys.BuildingA, 'images/buildings/building.png');
+    this.load.image(TextureKeys.BuildingBroken, 'images/buildings/building_broken.png');
+    this.load.spritesheet(TextureKeys.BuildingDeath,
+      'images/buildings/building_B_collapse.png',
+      { frameWidth: TextureProperties.Building_B_collapseWidth, frameHeight: TextureProperties.Building_B_collapseHeight });
+    this.load.image(TextureKeys.MountainA, 'images/buildings/mountain_0.png');
+    this.load.image(TextureKeys.MountainBroken, 'images/buildings/mountain_0_broken.png');
+    this.load.spritesheet(TextureKeys.MountainDeath,
+      'images/buildings/mountain_explode.png',
+      { frameWidth: TextureProperties.MountainDeathWidth, frameHeight: TextureProperties.MountainDeathHeight });
+    this.load.spritesheet(TextureKeys.EmergingIntro,
+      'images/buildings/emerge_intro.png',
+      { frameWidth: 56, frameHeight: 43 });
+    this.load.spritesheet(TextureKeys.EmergingLoop,
+      'images/buildings/emerge_loop.png',
+      { frameWidth: 56, frameHeight: 43 });
+    this.load.image(TextureKeys.EmergingAttack, 'images/buildings/icon_emerge.png');
 
     // levels
     this.load.json(LevelKeys.Level1, 'levels/1.json');

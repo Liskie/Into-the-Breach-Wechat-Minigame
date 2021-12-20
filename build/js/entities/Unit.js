@@ -11,12 +11,16 @@ export class Unit {
         this.maxHp = maxHp;
         this.dCoords = [[1, 0], [-1, 0], [0, 1], [0, -1]];
         this.path = new Array();
+        this.game = game;
         this.coords = coords;
         this.sprite = sprite;
         this.maxAp = maxAp;
         this.atkRange = atkRange;
         this.hp = hp;
         this.maxHp = maxHp;
+        this.spriteLink();
+    }
+    spriteLink() {
     }
     checkCoords(coords, dis, nowDis) {
         if (coords.x > 7 || coords.y > 7 || coords.x < 0 || coords.y < 0) {
@@ -98,7 +102,11 @@ export class Unit {
         }
         return res;
     }
+    copySprite() {
+        return this.sprite;
+    }
     moveTo(des_coords) {
+        var _a;
         const path = this.findPathToCoords(des_coords);
         // There seems no implementation of sleep() in Phaser, so we have to try another approach
         // for (let i = 0; i < path.length; i++) {
@@ -106,11 +114,35 @@ export class Unit {
         //   sleep(20);
         // }
         let i = 0;
+        if (this.game.aliensEmergeBoard[path[i].x][path[i].y] != null) {
+            this.sprite.destroy(true);
+            this.sprite = this.copySprite();
+            this.spriteLink();
+        }
+        let oldCoords = this.coords;
+        this.moveStepTo(path[i]);
+        i++;
+        if (this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y] != null) {
+            (_a = this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y]) === null || _a === void 0 ? void 0 : _a.checkAtkSprite();
+        }
         this.game.time.addEvent({
             delay: UnitProperties.MoveDelay,
             callback: () => {
-                this.moveStepTo(path[i]);
-                i += 1;
+                var _a;
+                if (i != path.length) {
+                    if (this.game.aliensEmergeBoard[path[i].x][path[i].y] != null) {
+                        this.sprite.destroy(true);
+                        this.sprite = this.copySprite();
+                        this.spriteLink();
+                    }
+                    this.moveStepTo(path[i]);
+                    i += 1;
+                }
+                else {
+                    if (this.game.aliensEmergeBoard[this.coords.x][this.coords.y] != null) {
+                        (_a = this.game.aliensEmergeBoard[this.coords.x][this.coords.y]) === null || _a === void 0 ? void 0 : _a.checkAtkSprite();
+                    }
+                }
             },
             callbackScope: this,
             repeat: path.length - 1
@@ -139,7 +171,7 @@ export class Unit {
     attack(target) {
         target.beAttacked(1);
     }
-    push(dtCoords) {
+    pushed(dtCoords) {
         const tgtCoords = new Coords(this.coords.x + dtCoords.x, this.coords.y + dtCoords.y);
         if (tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0) {
             return;

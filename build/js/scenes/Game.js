@@ -8,10 +8,11 @@ import { getScale } from '../utils/index';
 import { Mech } from '../entities/Mech';
 // eslint-disable-next-line import/no-cycle
 import { Alien } from '../entities/Alien';
+import { AliensEmerge } from '../entities/AliensEmerge';
 // eslint-disable-next-line import/no-cycle
 import { Carb } from '../entities/Aliens/Carb';
 import { Coords } from '../entities/Coords';
-import MechProperties from '../consts/MechProperties';
+import LevelProperties from '../consts/LevelProperties';
 import LevelKeys from '../consts/LevelKeys';
 // eslint-disable-next-line import/no-cycle
 import { Building } from '../entities/Building';
@@ -39,8 +40,13 @@ export default class Game extends Phaser.Scene {
         this.possibleMoveDestinationsShowerMech = null;
         // aliens
         this.aliens = [];
+        this.aliensEmergeBoard = new Array();
+        this.aliensEmerges = new Array();
         // buildings
         this.showerBuilding = null;
+        this.cntEmerges = 0;
+        this.cntAliens = 0;
+        this.isPlayerTurn = false;
     }
     create() {
         this.creatAnims();
@@ -58,9 +64,34 @@ export default class Game extends Phaser.Scene {
         this.createMechs();
         this.createAliens();
         this.createBuilding();
-        // Development
-        this.dev();
+        // First turn
         this.alienMove();
+        this.cntAliens = 3;
+        this.time.addEvent({
+            callback: () => {
+                this.addAlienEmergePos();
+            },
+            delay: 3 * UnitProperties.MoveDelay * 10,
+            callbackScope: this,
+            repeat: 0
+        });
+        this.cntEmerges = 2;
+        this.time.addEvent({
+            callback: () => {
+                this.showEnvEffects();
+            },
+            delay: 3 * UnitProperties.MoveDelay * 10 + 2 * 1200,
+            callbackScope: this,
+            repeat: 0
+        });
+        this.time.addEvent({
+            callback: () => {
+                this.playerMoveAndAttack();
+            },
+            delay: 3 * UnitProperties.MoveDelay * 10 + 2 * 1200 + 0,
+            callbackScope: this,
+            repeat: 0
+        });
     }
     update() {
         this.gameTurnLabel.setText(this.Turn.toString());
@@ -117,8 +148,11 @@ export default class Game extends Phaser.Scene {
     buttonEvent() {
         this.ExitGameLabel.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.ExitGameLabel.width, this.ExitGameLabel.height), Phaser.Geom.Rectangle.Contains);
         this.ExitGameLabel.on('pointerdown', () => {
-            if (this.Turn > 0) {
-                this.Turn -= 1;
+            if (this.isPlayerTurn) {
+                if (this.Turn > 0) {
+                    this.Turn -= 1;
+                    this.doTurn();
+                }
             }
         });
     }
@@ -178,44 +212,19 @@ export default class Game extends Phaser.Scene {
                 // eslint-disable-next-line no-continue
                 continue;
             }
-            const buildingHScale = 1;
-            const buildingMountainScale = 0.9;
-            if (i % 2) {
-                // const mechSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.MechTankA)
-                //   .setOrigin(0.5, 0.5)
-                //   .setScale(this._scale, this._scale)
-                //   .setInteractive();
-                // this.anims.create({
-                //   key: `mech${i.toString()}`,
-                //   frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
-                //   frameRate: 3,
-                //   repeat: -1
-                // });
-                // mechSprite.anims.play(`mech${i.toString()}`);
-                // this.board[xCoord][yCoord] = new Mech(this, new Coords(xCoord, yCoord), mechSprite,
-                //   MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
-                const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.Building_B_collapse)
-                    .setOrigin(0.45, 0.55)
-                    .setScale(buildingHScale, buildingHScale)
-                    .setInteractive();
-                this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite, MechProperties.TankMaxHp, MechProperties.TankMaxHp, true);
-            }
-            else {
-                const buildingSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.BuildingMountain)
-                    .setOrigin(0.35, 0.65)
-                    .setScale(buildingMountainScale, buildingMountainScale)
-                    .setInteractive();
-                this.board[xCoord][yCoord] = new Building(this, new Coords(xCoord, yCoord), buildingSprite, MechProperties.TankMaxHp, MechProperties.TankMaxHp, false);
-            }
+            this.board[xCoord][yCoord] = Building.newUnit(this, new Coords(xCoord, yCoord), i % 2 == 0);
         }
     }
     createBoard() {
         for (let i = 0; i < this.BOARD_SIZE; i++) {
             const tempo = new Array();
+            const tempo2 = new Array();
             for (let j = 0; j < this.BOARD_SIZE; j++) {
                 tempo.push(null);
+                tempo2.push(null);
             }
             this.board.push(tempo);
+            this.aliensEmergeBoard.push(tempo2);
         }
     }
     createMechs() {
@@ -223,12 +232,7 @@ export default class Game extends Phaser.Scene {
         for (let i = 0; i < levelJson.initMechPos.length; i++) {
             const xCoord = levelJson.initMechPos[i][0];
             const yCoord = levelJson.initMechPos[i][1];
-            const mechSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.MechTankA)
-                .setOrigin(0.5, 0.5)
-                .setScale(this._scale, this._scale)
-                .setInteractive();
-            mechSprite.anims.play(`mech-normal`);
-            this.board[xCoord][yCoord] = new Mech(this, new Coords(xCoord, yCoord), mechSprite, MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+            this.board[xCoord][yCoord] = Mech.newUnit(this, new Coords(xCoord, yCoord));
         }
         // Generate reachable grid texture
         this.add.graphics()
@@ -250,27 +254,88 @@ export default class Game extends Phaser.Scene {
         for (let i = 0; i < levelJson.initAlienPos.length; i++) {
             const xCoord = levelJson.initAlienPos[i][0];
             const yCoord = levelJson.initAlienPos[i][1];
-            const alienSprite = this.physics.add.sprite(this.boardWXCoords[xCoord][yCoord][0], this.boardWXCoords[xCoord][yCoord][1], TextureKeys.CarbA)
-                .setOrigin(0.5, 0.5)
-                .setScale(carbScale, carbScale)
-                .setInteractive();
-            alienSprite.anims.play(`carb-normal`);
-            this.board[xCoord][yCoord] = new Carb(this, new Coords(xCoord, yCoord), alienSprite, MechProperties.TankMaxAp, MechProperties.TankAtkRange, MechProperties.TankMaxHp, MechProperties.TankMaxHp);
+            this.board[xCoord][yCoord] = Carb.newUnit(this, new Coords(xCoord, yCoord));
         }
     }
     // Main game logic
     doTurn() {
         // oneTurn: alienArise -> alienMove -> showAlienArisePos
         // -> showEnvEffects -> playerMove&Attack -> takeEnvEffects -> alienAttack
-        this.alienArise();
-        this.alienMove();
-        this.showAlienArisePos();
-        this.showEnvEffects();
-        this.playerMoveAndAttack();
+        this.isPlayerTurn = false;
         this.takeEnvEffects();
-        this.alienAttack();
+        this.time.addEvent({
+            callback: () => {
+                this.alienAttack();
+            },
+            delay: 0,
+            callbackScope: this,
+            repeat: 0
+        });
+        this.time.addEvent({
+            callback: () => {
+                this.alienEmerge();
+            },
+            delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9,
+            callbackScope: this,
+            repeat: 0
+        });
+        this.time.addEvent({
+            callback: () => {
+                this.alienMove();
+            },
+            delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9 + this.cntEmerges * 1200,
+            callbackScope: this,
+            repeat: 0
+        });
+        this.time.addEvent({
+            callback: () => {
+                this.addAlienEmergePos();
+            },
+            delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 13,
+            callbackScope: this,
+            repeat: 0
+        });
+        this.time.addEvent({
+            callback: () => {
+                this.showEnvEffects();
+            },
+            delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 13 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200,
+            callbackScope: this,
+            repeat: 0
+        });
+        this.time.addEvent({
+            callback: () => {
+                this.playerMoveAndAttack();
+            },
+            delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 13 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200 + 0,
+            callbackScope: this,
+            repeat: 0
+        });
     }
-    alienArise() {
+    alienEmerge() {
+        this.aliensEmerges = [];
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (this.aliensEmergeBoard[i][j] != null) {
+                    this.aliensEmerges.push(this.aliensEmergeBoard[i][j]);
+                }
+            }
+        }
+        if (this.aliensEmerges.length > 0) {
+            this.aliensEmerges[0].tryEmerge();
+            let i = 1;
+            this.time.addEvent({
+                callback: () => {
+                    if (i != this.aliensEmerges.length) {
+                        this.aliensEmerges[i].tryEmerge();
+                        i++;
+                    }
+                },
+                delay: 1100,
+                callbackScope: this,
+                repeat: this.aliensEmerges.length - 1
+            });
+        }
     }
     alienMove() {
         this.aliens = [];
@@ -282,39 +347,115 @@ export default class Game extends Phaser.Scene {
                 }
             }
         }
-        /*
-        for (let i = 0; i < this.aliens.length; i++) {
-          console.log(i);
-          this.aliens[i].moveAndPrepareForAttack();
+        if (this.aliens.length != 0) {
+            this.aliens[0].moveAndPrepareForAttack();
+            let i = 1;
+            this.time.addEvent({
+                callback: () => {
+                    if (i != this.aliens.length) {
+                        this.aliens[i].moveAndPrepareForAttack();
+                        i++;
+                    }
+                },
+                delay: UnitProperties.MoveDelay * 10,
+                callbackScope: this,
+                repeat: this.aliens.length - 1
+            });
         }
-        */
-        let i = 0;
-        this.time.addEvent({
-            callback: () => {
-                this.aliens[i].moveAndPrepareForAttack();
-                i++;
-            },
-            delay: UnitProperties.MoveDelay * 10,
-            callbackScope: this,
-            repeat: this.aliens.length - 1
-        });
     }
-    showAlienArisePos() {
+    addOneAlienEmergePos() {
+        let choice = [];
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (this.board[i][j] == null && this.aliensEmergeBoard[i][j] == null) {
+                    choice.push(new Coords(i, j));
+                }
+            }
+        }
+        if (choice.length != 0) {
+            let rand = Math.ceil(Math.random() * choice.length);
+            if (rand == choice.length) {
+                rand--;
+            }
+            this.aliensEmergeBoard[choice[rand].x][choice[rand].y] = new AliensEmerge(this, choice[rand]);
+        }
+    }
+    addAlienEmergePos() {
+        if (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder) {
+            this.addOneAlienEmergePos();
+            let i = 1;
+            this.time.addEvent({
+                callback: () => {
+                    if (i != LevelProperties.EmergeNum) {
+                        this.addOneAlienEmergePos();
+                        i++;
+                    }
+                    else {
+                        this.calCnt();
+                    }
+                },
+                delay: 1100,
+                callbackScope: this,
+                repeat: LevelProperties.EmergeNum - 1
+            });
+        }
+        else {
+            this.calCnt();
+        }
+    }
+    calCnt() {
+        // count
+        this.cntAliens = 0;
+        this.cntEmerges = 0;
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (this.aliensEmergeBoard[i][j] != null) {
+                    this.cntEmerges++;
+                }
+                if (this.board[i][j] instanceof Alien) {
+                    this.cntAliens++;
+                }
+            }
+        }
     }
     showEnvEffects() {
     }
     playerMoveAndAttack() {
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (this.board[i][j] instanceof Mech) {
+                    this.board[i][j].movesLeft = 1;
+                }
+            }
+        }
+        this.isPlayerTurn = true;
     }
     takeEnvEffects() {
     }
     alienAttack() {
-    }
-    dev() {
-        // if (this.board[1][1] instanceof Mech) {
-        //   this.board[1][1].showPossibleMoveDestinations();
-        // } else if (this.board[1][1] instanceof Unit) {
-        //   // this.board[1][1].showPossibleMoveDestinations();
-        // }
+        this.aliens = [];
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (this.board[i][j] instanceof Alien) {
+                    this.aliens.push(this.board[i][j]);
+                }
+            }
+        }
+        if (this.aliens.length != 0) {
+            this.aliens[0].attack();
+            let i = 1;
+            this.time.addEvent({
+                callback: () => {
+                    if (i != this.aliens.length) {
+                        this.aliens[i].attack();
+                        i++;
+                    }
+                },
+                delay: UnitProperties.MoveDelay * 10,
+                callbackScope: this,
+                repeat: this.aliens.length - 1
+            });
+        }
     }
     creatAnims() {
         this.anims.create({
@@ -330,35 +471,78 @@ export default class Game extends Phaser.Scene {
             repeat: -1
         });
         this.anims.create({
-            key: `building-dead`,
-            frames: this.anims.generateFrameNumbers(TextureKeys.Building_B_collapse, { start: 0, end: 11 }),
-            frameRate: 4,
+            key: `carb-death`,
+            frames: this.anims.generateFrameNumbers(TextureKeys.CarbDeath, { start: 0, end: 7 }),
+            frameRate: 7.5,
             repeat: 1
+        });
+        this.anims.create({
+            key: `carb-emerge`,
+            frames: this.anims.generateFrameNumbers(TextureKeys.CarbEmerge, { start: 0, end: 9 }),
+            frameRate: 9.5,
+            repeat: 1
+        });
+        this.anims.create({
+            key: `building-death`,
+            frames: this.anims.generateFrameNumbers(TextureKeys.BuildingDeath, { start: 0, end: 11 }),
+            frameRate: 11.5,
+            repeat: 1
+        });
+        this.anims.create({
+            key: `mountain-death`,
+            frames: this.anims.generateFrameNumbers(TextureKeys.MountainDeath, { start: 0, end: 12 }),
+            frameRate: 11.5,
+            repeat: 1
+        });
+        this.anims.create({
+            key: `emerging-intro`,
+            frames: this.anims.generateFrameNumbers(TextureKeys.EmergingIntro, { start: 0, end: 3 }),
+            frameRate: 3.5,
+            repeat: 1
+        });
+        this.anims.create({
+            key: `emerging-normal`,
+            frames: this.anims.generateFrameNumbers(TextureKeys.EmergingLoop, { start: 0, end: 3 }),
+            frameRate: 6,
+            repeat: -1
         });
     }
     dead(poorGuy) {
+        var _a;
         if (poorGuy instanceof Building) {
             if (poorGuy.ruinFlag) {
-                poorGuy.sprite.anims.play('building-dead');
+                poorGuy.sprite.anims.play('building-death');
             }
             else {
-                poorGuy.sprite.anims.play('hill-dead');
+                poorGuy.sprite.anims.play('mountain-death');
+            }
+            this.board[poorGuy.coords.x][poorGuy.coords.y] = null;
+        }
+        if (poorGuy instanceof Mech) {
+            poorGuy.sprite.destroy(true);
+            poorGuy.sprite = this.physics.add.sprite(this.boardWXCoords[poorGuy.coords.x][poorGuy.coords.y][0], this.boardWXCoords[poorGuy.coords.x][poorGuy.coords.y][1], TextureKeys.MechTankDeath)
+                .setOrigin(0.5, 0.5)
+                .setScale(this._scale, this._scale)
+                .setInteractive();
+            if (this.aliensEmergeBoard[poorGuy.coords.x][poorGuy.coords.y] != null) {
+                (_a = this.aliensEmergeBoard[poorGuy.coords.x][poorGuy.coords.y]) === null || _a === void 0 ? void 0 : _a.remove();
+                this.cntEmerges--;
             }
         }
-        if (poorGuy instanceof Mech) {
-            poorGuy.sprite.anims.play('Mech-dead');
-        }
-        if (poorGuy instanceof Mech) {
-            poorGuy.sprite.anims.play('Carb-dead');
+        if (poorGuy instanceof Carb) {
+            poorGuy.sprite.anims.play('carb-death');
+            this.cntAliens--;
+            this.board[poorGuy.coords.x][poorGuy.coords.y] = null;
         }
         this.time.addEvent({
             callback: () => {
-                poorGuy.sprite.destroy(true);
-                this.board[poorGuy.coords.x][poorGuy.coords.y] = null;
+                if (!(poorGuy instanceof Mech)) {
+                    poorGuy.sprite.destroy(true);
+                }
             },
-            delay: 300,
+            delay: 1000,
             callbackScope: this,
-            repeat: 1
+            repeat: 0
         });
     }
 }

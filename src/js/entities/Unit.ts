@@ -15,14 +15,18 @@ export class Unit {
     public hp: number,
     public maxHp: number
   ) {
+    this.game = game;
     this.coords = coords;
     this.sprite = sprite;
     this.maxAp = maxAp;
     this.atkRange = atkRange;
     this.hp = hp;
     this.maxHp = maxHp;
+    this.spriteLink();
   }
 
+  spriteLink(){
+  }
   checkCoords(coords: Coords, dis: Array<Array<number>>, nowDis: number) {
     if (coords.x > 7 || coords.y > 7 || coords.x < 0 || coords.y < 0) {
       return false;
@@ -108,6 +112,10 @@ export class Unit {
     return res;
   }
 
+  copySprite(){
+    return this.sprite;
+  }
+
   moveTo(des_coords: Coords) {
     const path = this.findPathToCoords(des_coords);
     // There seems no implementation of sleep() in Phaser, so we have to try another approach
@@ -115,12 +123,36 @@ export class Unit {
     //   this.moveStepTo(path[i]);
     //   sleep(20);
     // }
+    
     let i = 0;
+    if(this.game.aliensEmergeBoard[path[i].x][path[i].y] != null){
+      this.sprite.destroy(true);
+      this.sprite = this.copySprite();
+      this.spriteLink();
+    }
+    let oldCoords = this.coords;
+    this.moveStepTo(path[i]);
+    i++;
+    if(this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y] != null){
+      this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y]?.checkAtkSprite();
+    }
     this.game.time.addEvent({
       delay: UnitProperties.MoveDelay, // ms
       callback: () => {
-        this.moveStepTo(path[i]);
-        i += 1;
+        if(i != path.length){
+          if(this.game.aliensEmergeBoard[path[i].x][path[i].y] != null){
+            this.sprite.destroy(true);
+            this.sprite = this.copySprite();
+            this.spriteLink();
+          }
+          this.moveStepTo(path[i]);
+          i += 1;
+        }
+        else{
+          if(this.game.aliensEmergeBoard[this.coords.x][this.coords.y] != null){
+            this.game.aliensEmergeBoard[this.coords.x][this.coords.y]?.checkAtkSprite();
+          }
+        }
       },
       callbackScope: this,
       repeat: path.length - 1
@@ -151,7 +183,7 @@ export class Unit {
   attack(target: Unit) {
     target.beAttacked(1);
   }
-  push(dtCoords: Coords){
+  pushed(dtCoords: Coords){
     const tgtCoords = new Coords(this.coords.x + dtCoords.x, this.coords.y + dtCoords.y);
     if(tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0){
       return;
