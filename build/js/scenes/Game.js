@@ -8,6 +8,7 @@ import { getScale } from '../utils/index';
 import { Mech } from '../entities/Mech';
 // eslint-disable-next-line import/no-cycle
 import { Alien } from '../entities/Alien';
+// eslint-disable-next-line import/no-cycle
 import { AliensEmerge } from '../entities/AliensEmerge';
 // eslint-disable-next-line import/no-cycle
 import { Carb } from '../entities/Aliens/Carb';
@@ -96,6 +97,17 @@ export default class Game extends Phaser.Scene {
     update() {
         this.gameTurnLabel.setText(this.Turn.toString());
         this.gameTimeLabel.setText(this.intoTime());
+        // eslint-disable-next-line eqeqeq
+        if (this.Turn == -1) {
+            this.scene.start(SceneKeys.Game);
+            // eslint-disable-next-line no-empty
+            if (this.scene.isActive(SceneKeys.GameOver)) {
+            }
+            else {
+                // 转换场景
+                this.scene.run(SceneKeys.GameOver);
+            }
+        }
     }
     drawBackground() {
         this._scale = getScale(width, height);
@@ -149,7 +161,7 @@ export default class Game extends Phaser.Scene {
         this.ExitGameLabel.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.ExitGameLabel.width, this.ExitGameLabel.height), Phaser.Geom.Rectangle.Contains);
         this.ExitGameLabel.on('pointerdown', () => {
             if (this.isPlayerTurn) {
-                if (this.Turn > 0) {
+                if (this.Turn > -1) {
                     this.Turn -= 1;
                     this.doTurn();
                 }
@@ -347,11 +359,13 @@ export default class Game extends Phaser.Scene {
                 }
             }
         }
+        // eslint-disable-next-line eqeqeq
         if (this.aliens.length != 0) {
             this.aliens[0].moveAndPrepareForAttack();
             let i = 1;
             this.time.addEvent({
                 callback: () => {
+                    // eslint-disable-next-line eqeqeq
                     if (i != this.aliens.length) {
                         this.aliens[i].moveAndPrepareForAttack();
                         i++;
@@ -364,7 +378,7 @@ export default class Game extends Phaser.Scene {
         }
     }
     addOneAlienEmergePos() {
-        let choice = [];
+        const choice = [];
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 if (this.board[i][j] == null && this.aliensEmergeBoard[i][j] == null) {
@@ -372,8 +386,10 @@ export default class Game extends Phaser.Scene {
                 }
             }
         }
+        // eslint-disable-next-line eqeqeq
         if (choice.length != 0) {
             let rand = Math.ceil(Math.random() * choice.length);
+            // eslint-disable-next-line eqeqeq
             if (rand == choice.length) {
                 rand--;
             }
@@ -381,11 +397,13 @@ export default class Game extends Phaser.Scene {
         }
     }
     addAlienEmergePos() {
+        // eslint-disable-next-line eqeqeq
         if (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder) {
             this.addOneAlienEmergePos();
             let i = 1;
             this.time.addEvent({
                 callback: () => {
+                    // eslint-disable-next-line eqeqeq
                     if (i != LevelProperties.EmergeNum) {
                         this.addOneAlienEmergePos();
                         i++;
@@ -459,49 +477,49 @@ export default class Game extends Phaser.Scene {
     }
     creatAnims() {
         this.anims.create({
-            key: `mech-normal`,
+            key: 'mech-normal',
             frames: this.anims.generateFrameNumbers(TextureKeys.MechTankA, { start: 0, end: 2 }),
             frameRate: 3,
             repeat: -1
         });
         this.anims.create({
-            key: `carb-normal`,
+            key: 'carb-normal',
             frames: this.anims.generateFrameNumbers(TextureKeys.CarbA, { start: 0, end: 3 }),
             frameRate: 4,
             repeat: -1
         });
         this.anims.create({
-            key: `carb-death`,
+            key: 'carb-death',
             frames: this.anims.generateFrameNumbers(TextureKeys.CarbDeath, { start: 0, end: 7 }),
             frameRate: 7.5,
             repeat: 1
         });
         this.anims.create({
-            key: `carb-emerge`,
+            key: 'carb-emerge',
             frames: this.anims.generateFrameNumbers(TextureKeys.CarbEmerge, { start: 0, end: 9 }),
             frameRate: 9.5,
             repeat: 1
         });
         this.anims.create({
-            key: `building-death`,
+            key: 'building-death',
             frames: this.anims.generateFrameNumbers(TextureKeys.BuildingDeath, { start: 0, end: 11 }),
             frameRate: 11.5,
             repeat: 1
         });
         this.anims.create({
-            key: `mountain-death`,
+            key: 'mountain-death',
             frames: this.anims.generateFrameNumbers(TextureKeys.MountainDeath, { start: 0, end: 12 }),
             frameRate: 11.5,
             repeat: 1
         });
         this.anims.create({
-            key: `emerging-intro`,
+            key: 'emerging-intro',
             frames: this.anims.generateFrameNumbers(TextureKeys.EmergingIntro, { start: 0, end: 3 }),
             frameRate: 3.5,
             repeat: 1
         });
         this.anims.create({
-            key: `emerging-normal`,
+            key: 'emerging-normal',
             frames: this.anims.generateFrameNumbers(TextureKeys.EmergingLoop, { start: 0, end: 3 }),
             frameRate: 6,
             repeat: -1

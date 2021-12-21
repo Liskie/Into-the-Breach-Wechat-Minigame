@@ -1,10 +1,11 @@
 /**
  * 游戏主函数
  */
-import { screenWidth as width, screenHeight as height } from './utils/index';
+import { screenWidth as width, screenHeight as height} from './utils/index';
 import Preloader from './scenes/Preloader';
 import Game from './scenes/Game';
 import StartGame from './scenes/StartGame';
+import GameOver from './scenes/GameOver';
 import Music from './runtime/music';
 
 interface GameConfig extends Phaser.Types.Core.GameConfig {
@@ -35,7 +36,7 @@ export default class Main {
         },
       },
       // 注册场景：Preloader -> StartGame -> Game -> GameOver
-      scene: [Preloader, StartGame, Game],
+      scene: [Preloader, StartGame, Game, GameOver],
     };
 
     this.create();

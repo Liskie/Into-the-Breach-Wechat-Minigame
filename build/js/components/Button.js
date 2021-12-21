@@ -1,11 +1,12 @@
+import { screenWidth as width, screenHeight as height } from '../utils/index';
 class Button extends Phaser.GameObjects.Container {
-    constructor(scene, x, y, cb) {
+    constructor(scene, text, cb) {
         super(scene);
         const textObj = scene.add
-            .text(x, y, "", {
+            .text(width * 0.5, height * 0.5, text, {
             fontSize: '24px',
             color: '#FFFFFF',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#000000',
             shadow: { fill: true, blur: 0, offsetY: 0 },
             padding: { left: 15, right: 15, top: 10, bottom: 10 },
         })
