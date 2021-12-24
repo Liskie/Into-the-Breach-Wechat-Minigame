@@ -46,14 +46,37 @@ export class Building extends Unit {
             return buildingSprite;
         }
     }
+    copySprite() {
+        return Building.getSprite(this.game, this.coords, this.ruinFlag, this.hp == 1);
+    }
     dead() {
         this.game.dead(this);
     }
     beAttacked(damage) {
-        super.beAttacked(damage);
-        if (this.hp == 1) {
-            this.sprite.destroy(true);
-            this.sprite = Building.getSprite(this.game, this.coords, this.ruinFlag, true);
+        if (this.hp > 0) {
+            this.hp -= damage;
+            if (this.hp <= 0) {
+                this.dead();
+            }
+            else {
+                if (this.ruinFlag) {
+                    this.game.gameHp -= damage;
+                }
+                if (this.hp == 1) {
+                    this.sprite.destroy(true);
+                    this.sprite = Building.getSprite(this.game, this.coords, this.ruinFlag, true);
+                }
+                const tsprite = this.copySprite().setAlpha(0.5).setBlendMode('ADD');
+                this.game.time.addEvent({
+                    callback: () => {
+                        tsprite.setAlpha(0);
+                        tsprite.destroy();
+                    },
+                    delay: 300,
+                    callbackScope: this,
+                    repeat: 0
+                });
+            }
         }
     }
 }

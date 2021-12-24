@@ -11,20 +11,16 @@ enum TextureKeys {
   // Mechs
   MechTankA = 'mech_tank_a',
   MechTankDeath = 'mech_tank_death',
-  MechTankShot0 = 'mech_tank_shot_0',
-  MechTankShot1 = 'mech_tank_shot_1',
-  MechTankShot2 = 'mech_tank_shot_2',
-  MechTankShot3 = 'mech_tank_shot_3',
+  MechTankShot = 'mech_tank_shot_',
   // Aliens
   CarbA = 'carb_a',
   CarbDeath = 'carb_death',
   CarbEmerge = 'carb_emerge',
-  CarbShot0 = 'carb_shot_0',
-  CarbShot1 = 'carb_shot_1',
-  CarbShot2 = 'carb_shot_2',
-  CarbShot3 = 'carb_shot_3',
+  CarbShot = 'carb_shot_',
+  AlienShotPredic = 'alien_shot_predict_',
   // Grids
-  ReachableGrid = 'reachableGrid',
+  ReachableGrid = 'reachable_grid',
+  ActingGrid = 'acting_grid',
   // Buildings
   BuildingA = 'buildingA',
   BuildingBroken = 'building_broken',
@@ -36,6 +32,11 @@ enum TextureKeys {
   EmergingLoop = 'emerging_loop',
   EmergingAttack = 'emerging_attack',
   // icon
+  Number = 'number_',
+  Arrow = 'arrow_',
+  Melee = 'melee_',
+  Empty = 'empty',
+  Box = 'box',
 }
 
 export default TextureKeys;

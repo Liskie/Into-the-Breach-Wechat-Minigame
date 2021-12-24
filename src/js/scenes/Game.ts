@@ -65,6 +65,12 @@ export default class Game extends Phaser.Scene {
 
   public cntEmerges: number = 0;
   public cntAliens: number = 0;
+  public gameHp: number = UnitProperties.GameHp;
+  static isGameWin: boolean = false;
+  static totalScore: number = 0;
+  public isGameEnd: boolean = false;
+  public cntAlienKill = 0;
+  public cntPlayer = 3;
 
   create() {
     this.creatAnims();
@@ -92,7 +98,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.addAlienEmergePos();
       },
-      delay: 3 * UnitProperties.MoveDelay * 10, // ms
+      delay: 3 * UnitProperties.MoveDelay * 6, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -101,7 +107,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.showEnvEffects();
       },
-      delay: 3 * UnitProperties.MoveDelay * 10 + 2 * 1200, // ms
+      delay: 3 * UnitProperties.MoveDelay * 6 + 2 * 1200, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -109,24 +115,18 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.playerMoveAndAttack();
       },
-      delay: 3 * UnitProperties.MoveDelay * 10 + 2 * 1200 + 0, // ms
+      delay: 3 * UnitProperties.MoveDelay * 6 + 2 * 1200 + 0, // ms
       callbackScope: this,
       repeat: 0
     });
   }
 
   update() {
-    this.gameTurnLabel.setText(this.Turn.toString());
-    this.gameTimeLabel.setText(this.intoTime());
-    // eslint-disable-next-line eqeqeq
-    if (this.Turn == -1) {
-      this.scene.start(SceneKeys.Game);
-      // eslint-disable-next-line no-empty
-      if (this.scene.isActive(SceneKeys.GameOver)) {
-      } else {
-        // 转换场景
-        this.scene.run(SceneKeys.GameOver);
+    if(!this.isGameEnd){
+      if(this.Turn >= 0){
+        this.gameTurnLabel.setText(this.Turn.toString());
       }
+      this.gameTimeLabel.setText(this.intoTime());
     }
   }
 
@@ -282,20 +282,6 @@ export default class Game extends Phaser.Scene {
       const yCoord = levelJson.initMechPos[i][1];
       this.board[xCoord][yCoord] = Mech.newUnit(this, new Coords(xCoord, yCoord));
     }
-
-    // Generate reachable grid texture
-    this.add.graphics()
-      .fillStyle(0x13E92A)
-      .fillPoints([
-        new Phaser.Geom.Point(28.5, 0),
-        new Phaser.Geom.Point(0, 21.5),
-        new Phaser.Geom.Point(28.5, 42),
-        new Phaser.Geom.Point(56, 21.5)
-      ], true, true)
-      .setScale(this._scale)
-      .setAlpha(0.3)
-      .generateTexture(TextureKeys.ReachableGrid, 56, 42)
-      .destroy();
   }
 
   createAliens() {
@@ -310,9 +296,12 @@ export default class Game extends Phaser.Scene {
 
   // Main game logic
   doTurn() {
+    if(this.isGameEnd){
+      return;
+    }
     // oneTurn: alienArise -> alienMove -> showAlienArisePos
     // -> showEnvEffects -> playerMove&Attack -> takeEnvEffects -> alienAttack
-
+    console.log(this.cntAliens.toString());
     this.isPlayerTurn = false;
     this.takeEnvEffects();
     this.time.addEvent({
@@ -327,7 +316,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.alienEmerge();
       },
-      delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9, // ms
+      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -335,7 +324,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.alienMove();
       },
-      delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9 + this.cntEmerges * 1200, // ms
+      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -343,7 +332,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.addAlienEmergePos();
       },
-      delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 13, // ms
+      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -351,7 +340,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.showEnvEffects();
       },
-      delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 13 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200, // ms
+      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -359,7 +348,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.playerMoveAndAttack();
       },
-      delay: 0 + this.cntAliens * UnitProperties.MoveDelay * 9 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 13 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200 + 0, // ms
+      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200 + 0, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -409,12 +398,13 @@ export default class Game extends Phaser.Scene {
       this.time.addEvent({
         callback: () => {
           // eslint-disable-next-line eqeqeq
+          this.aliens[i - 1].showSpriteAfterMove(i);
           if (i != this.aliens.length) {
             this.aliens[i].moveAndPrepareForAttack();
             i++;
           }
         },
-        delay: UnitProperties.MoveDelay * 10, // ms
+        delay: UnitProperties.MoveDelay * 5.5, // ms
         callbackScope: this,
         repeat: this.aliens.length - 1
       });
@@ -488,6 +478,14 @@ export default class Game extends Phaser.Scene {
   public isPlayerTurn: boolean = false;
 
   playerMoveAndAttack() {
+    if (this.gameHp <= 0 || this.cntPlayer <= 0 || this.Turn == -1){
+      Game.isGameWin = (this.gameHp <= 0 || this.cntPlayer <= 0)  ? false : true;
+      this.isGameEnd = true;
+      Game.totalScore = (Game.isGameWin ? 10000 : 0) + this.cntPlayer * 500 + this.gameHp * 300 + this.cntAlienKill * 250;
+      this.scene.run(SceneKeys.GameOver);
+      return ;
+    }
+
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
         if (this.board[i][j] instanceof Mech) {
@@ -503,28 +501,26 @@ export default class Game extends Phaser.Scene {
   }
 
   alienAttack() {
-    this.aliens = [];
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        if (this.board[i][j] instanceof Alien) {
-          this.aliens.push(<Carb> this.board[i][j]);
-        }
+    if (this.cntAliens != 0) {
+      let i = 0;
+      while(i < this.aliens.length && this.aliens[i].hp <= 0){
+        i++;
       }
-    }
-
-    if (this.aliens.length != 0) {
-      this.aliens[0].attack();
-      let i = 1;
+      this.aliens[i].attack();
+      i++;
       this.time.addEvent({
         callback: () => {
-          if (i != this.aliens.length) {
+          while(i < this.aliens.length && this.aliens[i].hp <= 0){
+            i++;
+          }
+          if (i < this.aliens.length) {
             this.aliens[i].attack();
             i++;
           }
         },
-        delay: UnitProperties.MoveDelay * 10, // ms
+        delay: UnitProperties.ShotDelay * 10, // ms
         callbackScope: this,
-        repeat: this.aliens.length - 1
+        repeat: this.cntAliens - 1
       });
     }
   }
@@ -578,9 +574,37 @@ export default class Game extends Phaser.Scene {
       frameRate: 6,
       repeat: -1
     });
+    // Generate reachable grid texture
+    this.add.graphics()
+      .fillStyle(0x13E92A)
+      .fillPoints([
+        new Phaser.Geom.Point(28.5, 0),
+        new Phaser.Geom.Point(0, 21.5),
+        new Phaser.Geom.Point(28.5, 42),
+        new Phaser.Geom.Point(56, 21.5)
+      ], true, true)
+      .setScale(this._scale)
+      .setAlpha(0.3)
+      .generateTexture(TextureKeys.ReachableGrid, 56, 42)
+      .destroy();
+    this.add.graphics()
+      .fillStyle(0xAFAFAF)
+      .fillPoints([
+        new Phaser.Geom.Point(28.5, 0),
+        new Phaser.Geom.Point(0, 21.5),
+        new Phaser.Geom.Point(28.5, 42),
+        new Phaser.Geom.Point(56, 21.5)
+      ], true, true)
+      .setScale(this._scale)
+      .setAlpha(0.3)
+      .generateTexture(TextureKeys.ActingGrid, 56, 42)
+      .destroy();
+    
   }
 
   dead(poorGuy: Mech | Building | Carb) {
+    this.refreshAlienShotPredict();
+    poorGuy.setAct(false);
     if (poorGuy instanceof Building) {
       if ((<Building>poorGuy).ruinFlag) {
         poorGuy.sprite.anims.play('building-death');
@@ -591,10 +615,17 @@ export default class Game extends Phaser.Scene {
     }
     if (poorGuy instanceof Mech) {
       poorGuy.sprite.destroy(true);
+      this.cntPlayer--;
       poorGuy.sprite = this.physics.add.sprite(this.boardWXCoords[poorGuy.coords.x][poorGuy.coords.y][0], this.boardWXCoords[poorGuy.coords.x][poorGuy.coords.y][1], TextureKeys.MechTankDeath)
         .setOrigin(0.5, 0.5)
         .setScale(this._scale, this._scale)
         .setInteractive();
+      const tsprite = this.physics.add.sprite(this.boardWXCoords[poorGuy.coords.x][poorGuy.coords.y][0], this.boardWXCoords[poorGuy.coords.x][poorGuy.coords.y][1], TextureKeys.MechTankDeath)
+        .setOrigin(0.5, 0.5)
+        .setScale(this._scale, this._scale)
+        .setInteractive()
+        .setAlpha(0.5)
+        .setBlendMode('ERASE');
       if (this.aliensEmergeBoard[poorGuy.coords.x][poorGuy.coords.y] != null) {
         this.aliensEmergeBoard[poorGuy.coords.x][poorGuy.coords.y]?.remove();
         this.cntEmerges--;
@@ -603,6 +634,7 @@ export default class Game extends Phaser.Scene {
     if (poorGuy instanceof Carb) {
       poorGuy.sprite.anims.play('carb-death');
       this.cntAliens--;
+      this.cntAlienKill++;
       this.board[poorGuy.coords.x][poorGuy.coords.y] = null;
     }
     this.time.addEvent({
@@ -615,5 +647,22 @@ export default class Game extends Phaser.Scene {
       callbackScope: this,
       repeat: 0
     });
+  }
+  getEmptySprite(coords: Coords){
+    return this.physics.add.sprite(this.boardWXCoords[coords.x][coords.y][0], this.boardWXCoords[coords.x][coords.y][1], TextureKeys.Empty)
+    .setOrigin(0.5, 0.5)
+    .setScale(1, 1)
+    .setInteractive();
+  }
+  refreshAlienShotPredict(){
+    for(let i = 0; i < this.aliens.length; i++){
+      this.aliens[i].refreshShotPredict();
+    }
+  }
+  isShotPassalbe(i: Coords){
+    if(this.board[i.x][i.y] == null || (this.board[i.x][i.y] instanceof Mech && (<Unit>this.board[i.x][i.y]).hp <= 0)){
+      return true;
+    }
+    return false;
   }
 }

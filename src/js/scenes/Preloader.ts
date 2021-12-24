@@ -48,6 +48,11 @@ export default class Game extends Phaser.Scene {
     this.load.spritesheet(TextureKeys.CarbEmerge,
       'images/units/aliens/carb_emerge.png',
       { frameWidth: TextureProperties.CarbEmergeWidth, frameHeight: TextureProperties.CarbEmergeHeight });
+    for(let i = 0; i < 2; i++){
+      this.load.image(TextureKeys.AlienShotPredic + i.toString(), 'images/units/aliens/projectile_arrow_' + i.toString() +'.png');
+      this.load.image(TextureKeys.CarbShot + i.toString(), 'images/units/aliens/shot_firefly_' + i.toString() +'.png');
+      this.load.image(TextureKeys.MechTankShot + i.toString(), 'images/units/player/shot_mechtank_' + i.toString() +'.png');
+    }
 
     // buildings
     this.load.image(TextureKeys.BuildingA, 'images/buildings/building.png');
@@ -67,6 +72,17 @@ export default class Game extends Phaser.Scene {
       'images/buildings/emerge_loop.png',
       { frameWidth: 56, frameHeight: 43 });
     this.load.image(TextureKeys.EmergingAttack, 'images/buildings/icon_emerge.png');
+
+    // icons
+    for(let i = 0; i <= 9; i++){
+      this.load.image(TextureKeys.Number + i.toString(), 'images/icon/Text_' + i.toString() +'.png');
+    }
+    for(let i = 1; i <= 4; i++){
+      this.load.image(TextureKeys.Arrow + i.toString(), 'images/icon/arrow_' + i.toString() +'.png');
+      this.load.image(TextureKeys.Melee + i.toString(), 'images/icon/melee_' + i.toString() +'.png');
+    }
+    this.load.image(TextureKeys.Empty, 'images/icon/empty.png');
+    this.load.image(TextureKeys.Box, 'images/icon/push_box.png');
 
     // levels
     this.load.json(LevelKeys.Level1, 'levels/1.json');

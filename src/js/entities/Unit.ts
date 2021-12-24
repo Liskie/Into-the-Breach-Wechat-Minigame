@@ -4,6 +4,7 @@ import Game from '../scenes/Game';
 
 import { Coords } from './Coords';
 import UnitProperties from '../consts/UnitProperties';
+import TextureKeys from '../consts/TextureKeys';
 
 export class Unit {
   constructor(
@@ -23,6 +24,18 @@ export class Unit {
     this.hp = hp;
     this.maxHp = maxHp;
     this.spriteLink();
+    this.spriteShowAct = game.getEmptySprite(coords);
+    this.spriteShowAct.destroy();
+  }
+  onClick(){
+
+  }
+  public spriteShowAct: Phaser.Physics.Arcade.Sprite;
+
+  static getSpriteShowAct(game: Game, coords: Coords){
+    return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.ActingGrid)
+      .setOrigin(0.5, 0.5)
+      .setInteractive();
   }
 
   spriteLink(){
@@ -118,45 +131,40 @@ export class Unit {
 
   moveTo(des_coords: Coords) {
     const path = this.findPathToCoords(des_coords);
-    // There seems no implementation of sleep() in Phaser, so we have to try another approach
-    // for (let i = 0; i < path.length; i++) {
-    //   this.moveStepTo(path[i]);
-    //   sleep(20);
-    // }
-    
-    let i = 0;
-    if(this.game.aliensEmergeBoard[path[i].x][path[i].y] != null){
-      this.sprite.destroy(true);
-      this.sprite = this.copySprite();
-      this.spriteLink();
-    }
-    let oldCoords = this.coords;
-    this.moveStepTo(path[i]);
-    i++;
-    if(this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y] != null){
-      this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y]?.checkAtkSprite();
-    }
-    this.game.time.addEvent({
-      delay: UnitProperties.MoveDelay, // ms
-      callback: () => {
-        if(i != path.length){
-          if(this.game.aliensEmergeBoard[path[i].x][path[i].y] != null){
-            this.sprite.destroy(true);
-            this.sprite = this.copySprite();
-            this.spriteLink();
+    if(path.length > 0){
+      this.setAct(true);
+      let i = 0;
+      if(this.game.aliensEmergeBoard[path[i].x][path[i].y] != null){
+        this.refreshSprite();
+      }
+      let oldCoords = this.coords;
+      this.moveStepTo(path[i]);
+      i++;
+      if(this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y] != null){
+        this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y]?.checkSpriteAtk();
+      }
+      this.game.time.addEvent({
+        delay: UnitProperties.MoveDelay, // ms
+        callback: () => {
+          if(i != path.length){
+            if(this.game.aliensEmergeBoard[path[i].x][path[i].y] != null){
+              this.refreshSprite();
+            }
+            this.moveStepTo(path[i]);
+            i += 1;
           }
-          this.moveStepTo(path[i]);
-          i += 1;
-        }
-        else{
-          if(this.game.aliensEmergeBoard[this.coords.x][this.coords.y] != null){
-            this.game.aliensEmergeBoard[this.coords.x][this.coords.y]?.checkAtkSprite();
+          else{
+            if(this.game.aliensEmergeBoard[this.coords.x][this.coords.y] != null){
+              this.game.aliensEmergeBoard[this.coords.x][this.coords.y]?.checkSpriteAtk();
+            }
+            this.game.refreshAlienShotPredict();
+            this.setAct(false);
           }
-        }
-      },
-      callbackScope: this,
-      repeat: path.length - 1
-    });
+        },
+        callbackScope: this,
+        repeat: path.length - 1
+      });
+    }
   }
 
   moveStepTo(des_coords: Coords) {
@@ -169,19 +177,37 @@ export class Unit {
     // Move the sprite to the new coords, this ACTUALLY moves what the player sees on the board
     const wxCoords = this.game.boardWXCoords[des_coords.x][des_coords.y];
     this.sprite.setPosition(wxCoords[0], wxCoords[1]);
+    this.spriteShowAct.setPosition(wxCoords[0], wxCoords[1]);
   }
 
   dead(){
-    this.game.board[this.coords.x][this.coords.y] = null;
+    
   }
   beAttacked(damage: number){
-    this.hp -= damage;
-    if(this.hp <= 0){
-      this.dead();
+    if(this.hp > 0){
+      this.hp -= damage;
+      if(this.hp <= 0){
+        this.dead();
+      }
+      else{
+        const tsprite = this.copySprite().setAlpha(0.5).setBlendMode('ADD');
+        this.game.time.addEvent({
+          callback: () => {
+            tsprite.setAlpha(0);
+            tsprite.destroy();
+          },
+          delay: 300, // ms
+          callbackScope: this,
+          repeat: 0
+        });
+      }
     }
   }
-  attack(target: Unit) {
-    target.beAttacked(1);
+  attack() {
+
+  }
+  realAttack(tgt: Unit){
+    tgt.beAttacked(1);
   }
   pushed(dtCoords: Coords){
     const tgtCoords = new Coords(this.coords.x + dtCoords.x, this.coords.y + dtCoords.y);
@@ -194,15 +220,24 @@ export class Unit {
     }
     else{
       this.beAttacked(1);
-      if (this.game.board[tgtCoords.x][tgtCoords.x] instanceof Unit){
-        (<Unit>this.game.board[tgtCoords.x][tgtCoords.x]).beAttacked(1);
-      }
-      else{
-        
-      }
+      this.game.board[tgtCoords.x][tgtCoords.x]?.beAttacked(1);
     }
   }
 
   refreshState() {
+  }
+  setAct(sign: boolean){
+    if(sign){
+      this.spriteShowAct = Unit.getSpriteShowAct(this.game, this.coords);
+      this.refreshSprite();
+    }
+    else{
+      this.spriteShowAct.destroy();
+    }
+  }
+  refreshSprite(){
+    this.sprite.destroy(true);
+    this.sprite = this.copySprite();
+    this.spriteLink();
   }
 }

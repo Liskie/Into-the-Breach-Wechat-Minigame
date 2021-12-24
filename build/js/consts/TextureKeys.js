@@ -12,20 +12,16 @@ var TextureKeys;
     // Mechs
     TextureKeys["MechTankA"] = "mech_tank_a";
     TextureKeys["MechTankDeath"] = "mech_tank_death";
-    TextureKeys["MechTankShot0"] = "mech_tank_shot_0";
-    TextureKeys["MechTankShot1"] = "mech_tank_shot_1";
-    TextureKeys["MechTankShot2"] = "mech_tank_shot_2";
-    TextureKeys["MechTankShot3"] = "mech_tank_shot_3";
+    TextureKeys["MechTankShot"] = "mech_tank_shot_";
     // Aliens
     TextureKeys["CarbA"] = "carb_a";
     TextureKeys["CarbDeath"] = "carb_death";
     TextureKeys["CarbEmerge"] = "carb_emerge";
-    TextureKeys["CarbShot0"] = "carb_shot_0";
-    TextureKeys["CarbShot1"] = "carb_shot_1";
-    TextureKeys["CarbShot2"] = "carb_shot_2";
-    TextureKeys["CarbShot3"] = "carb_shot_3";
+    TextureKeys["CarbShot"] = "carb_shot_";
+    TextureKeys["AlienShotPredic"] = "alien_shot_predict_";
     // Grids
-    TextureKeys["ReachableGrid"] = "reachableGrid";
+    TextureKeys["ReachableGrid"] = "reachable_grid";
+    TextureKeys["ActingGrid"] = "acting_grid";
     // Buildings
     TextureKeys["BuildingA"] = "buildingA";
     TextureKeys["BuildingBroken"] = "building_broken";
@@ -37,5 +33,10 @@ var TextureKeys;
     TextureKeys["EmergingLoop"] = "emerging_loop";
     TextureKeys["EmergingAttack"] = "emerging_attack";
     // icon
+    TextureKeys["Number"] = "number_";
+    TextureKeys["Arrow"] = "arrow_";
+    TextureKeys["Melee"] = "melee_";
+    TextureKeys["Empty"] = "empty";
+    TextureKeys["Box"] = "box";
 })(TextureKeys || (TextureKeys = {}));
 export default TextureKeys;

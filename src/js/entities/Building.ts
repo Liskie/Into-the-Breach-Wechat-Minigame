@@ -54,15 +54,37 @@ export class Building extends Unit {
     }
   }
 
-
+  copySprite(): Phaser.Physics.Arcade.Sprite {
+    return Building.getSprite(this.game, this.coords, this.ruinFlag, this.hp == 1);
+  }
   dead(){
     this.game.dead(this);
   }
   beAttacked(damage: number): void {
-    super.beAttacked(damage);
-    if(this.hp == 1){
-      this.sprite.destroy(true);
-      this.sprite = Building.getSprite(this.game, this.coords, this.ruinFlag, true);
+    if(this.hp > 0){
+      this.hp -= damage;
+      if(this.hp <= 0){
+        this.dead();
+      }
+      else{
+        if(this.ruinFlag){
+          this.game.gameHp -= damage;
+        }
+        if(this.hp == 1){
+          this.sprite.destroy(true);
+          this.sprite = Building.getSprite(this.game, this.coords, this.ruinFlag, true);
+        }
+        const tsprite = this.copySprite().setAlpha(0.5).setBlendMode('ADD');
+        this.game.time.addEvent({
+          callback: () => {
+            tsprite.setAlpha(0);
+            tsprite.destroy();
+          },
+          delay: 300, // ms
+          callbackScope: this,
+          repeat: 0
+        });
+      }
     }
   }
 }

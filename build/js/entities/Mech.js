@@ -83,7 +83,7 @@ export class Mech extends Unit {
                             callback: () => {
                                 this.game.isPlayerTurn = true;
                             },
-                            delay: UnitProperties.MoveDelay * 12,
+                            delay: UnitProperties.MoveDelay * 8,
                             callbackScope: this,
                             repeat: 0
                         });

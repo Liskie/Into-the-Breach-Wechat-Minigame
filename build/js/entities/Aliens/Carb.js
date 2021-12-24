@@ -31,7 +31,7 @@ export class Carb extends Alien {
     }
     // 给定目标坐标，判断按照当前的攻击意图，该怪能不能打到目标
     ifAttackable(tgtCoords) {
-        if (this.atkIntention == -1) {
+        if (this.atkIntention <= 0 || this.atkIntention > 4) {
             return false;
         }
         const dis = new Coords(tgtCoords.x - this.coords.x, tgtCoords.y - this.coords.y);
@@ -40,7 +40,7 @@ export class Carb extends Alien {
         if (dis.x == 0 && dx == 0 && dy * dis.y > 0) {
             let sign = true;
             for (let i = this.coords.y + dy; i != tgtCoords.y; i += dy) {
-                if (this.game.board[tgtCoords.x][i] != null) {
+                if (!this.game.isShotPassalbe(new Coords(tgtCoords.x, i))) {
                     sign = false;
                     break;
                 }
@@ -50,7 +50,7 @@ export class Carb extends Alien {
         else if (dis.y == 0 && dy == 0 && dx * dis.x > 0) {
             let sign = true;
             for (let i = this.coords.x + dx; i != tgtCoords.x; i += dx) {
-                if (this.game.board[i][tgtCoords.y] != null) {
+                if (!this.game.isShotPassalbe(new Coords(i, tgtCoords.y))) {
                     sign = false;
                     break;
                 }
@@ -62,19 +62,37 @@ export class Carb extends Alien {
     // 查看当前攻击目标坐标
     getAttackPos(nowCoords) {
         let ret = new Coords(-1, -1);
-        if (this.atkIntention < 0 || this.atkIntention > 4) {
+        if (this.atkIntention <= 0 || this.atkIntention > 4) {
             return ret;
         }
         const dx = this.shootPos[this.atkIntention][0];
         const dy = this.shootPos[this.atkIntention][1];
         for (let i = new Coords(nowCoords.x + dx, nowCoords.y + dy); i.x >= 0 && i.x < 8 && i.y >= 0 && i.y < 8; i.x += dx, i.y += dy) {
-            if (this.game.board[i.x][i.y] != null) {
+            if (!this.game.isShotPassalbe(i)) {
                 ret.x = i.x;
                 ret.y = i.y;
                 break;
             }
         }
         return ret;
+    }
+    //计算弹道
+    getShotRoad() {
+        let road = [];
+        if (this.atkIntention > 4 || this.atkIntention <= 0) {
+            return road;
+        }
+        let tgt = this.getAttackPos(this.coords);
+        const dx = this.shootPos[this.atkIntention][0];
+        const dy = this.shootPos[this.atkIntention][1];
+        if (tgt.x >= 0 && tgt.x < 9 && tgt.y >= 0 && tgt.y < 9) {
+            let i = new Coords(1, 1);
+            for (i = new Coords(this.coords.x, this.coords.y); i.x >= 0 && i.x < 8 && i.y >= 0 && i.y < 8 && (i.x != tgt.x || i.y != tgt.y); i = new Coords(i.x + dx, i.y + dy)) {
+                road.push(i);
+            }
+            road.push(tgt);
+        }
+        return road;
     }
     // 玩家动之前，怪先动，并显示攻击意图
     moveAndPrepareForAttack() {
@@ -86,12 +104,18 @@ export class Carb extends Alien {
                 if (!achieve[i][j] || this.game.aliensEmergeBoard[i][j] != null) {
                     continue;
                 }
+                let tcd = new Coords(i, j);
+                this.game.board[this.coords.x][this.coords.y] = null;
+                let tsign = true;
                 for (let k = 0; k < this.game.aliens.length; k++) {
-                    if (this.game.aliens[k].ifAttackable(new Coords(i, j))) {
-                        continue;
+                    if (this.game.aliens[k].ifAttackable(tcd)) {
+                        tsign = false;
+                        break;
                     }
                 }
-                let tcd = new Coords(i, j);
+                if (!tsign) {
+                    continue;
+                }
                 moveOnlyChoice.push(tcd);
                 for (let k = 1; k < 5; k++) {
                     this.atkIntention = k;
@@ -105,6 +129,7 @@ export class Carb extends Alien {
                         }
                     }
                 }
+                this.game.board[this.coords.x][this.coords.y] = this;
                 this.atkIntention = -1;
             }
         }
@@ -124,18 +149,9 @@ export class Carb extends Alien {
             this.moveTo(moveOnlyChoice[rand]);
         }
     }
-    // 怪物攻击
-    attack() {
-        var _a;
-        if (this.hp <= 0 || this.atkIntention < 0 || this.atkIntention > 3) {
-            return;
-        }
-        let atkPos = this.getAttackPos(this.coords);
-        if (atkPos.x > -1 && atkPos.y > -1 && atkPos.x < 8 && atkPos.y < 8) {
-            (_a = this.game.board[atkPos.x][atkPos.y]) === null || _a === void 0 ? void 0 : _a.beAttacked(1);
-        }
-    }
     dead() {
+        this.cleanSpriteNA();
+        this.cleanShotPredict();
         this.game.dead(this);
     }
     copySprite() {
