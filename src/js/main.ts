@@ -1,12 +1,13 @@
 /**
  * 游戏主函数
  */
-import { screenWidth as width, screenHeight as height} from './utils/index';
+import { screenWidth as width, screenHeight as height } from './utils/index';
 import Preloader from './scenes/Preloader';
 import Game from './scenes/Game';
 import StartGame from './scenes/StartGame';
 import GameOver from './scenes/GameOver';
 import Music from './runtime/music';
+import Author from './scenes/Author';
 
 interface GameConfig extends Phaser.Types.Core.GameConfig {
   pixelRatio?: number; // 屏幕像素比
@@ -36,7 +37,7 @@ export default class Main {
         },
       },
       // 注册场景：Preloader -> StartGame -> Game -> GameOver
-      scene: [Preloader, StartGame, Game, GameOver],
+      scene: [Preloader, StartGame, Game, GameOver, Author],
     };
 
     this.create();

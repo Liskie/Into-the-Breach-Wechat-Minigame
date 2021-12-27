@@ -26,7 +26,7 @@ export default class Game extends Phaser.Scene {
 
   update() {
   }
-
+  public authorSign = false;
   createMenu() {
     console.log(width);
     console.log(height);
@@ -44,7 +44,9 @@ export default class Game extends Phaser.Scene {
     // 设置开始游戏的事件监听
     this.StartGameLabel.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.StartGameLabel.width, this.StartGameLabel.height), Phaser.Geom.Rectangle.Contains);
     this.StartGameLabel.on('pointerdown', () => {
-      this.scene.start(SceneKeys.Game);
+      if (!this.authorSign) {
+        this.scene.start(SceneKeys.Game);
+      }
     });
     // 主创人员
     this.DeveloperLabel = this.add.text(30, height / 2 + 30, '主创人员', {
@@ -54,6 +56,15 @@ export default class Game extends Phaser.Scene {
       shadow: { fill: true, blur: 0, offsetY: 0 },
       padding: { left: 20, right: 20, top: 10, bottom: 10 },
     }).setScrollFactor(0).setOrigin(0, 0);
+
+    // 设置主创人员的事件监听
+    this.DeveloperLabel.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.DeveloperLabel.width, this.DeveloperLabel.height), Phaser.Geom.Rectangle.Contains);
+    this.DeveloperLabel.on('pointerdown', () => {
+      if (!this.authorSign) {
+        this.authorSign = true;
+        this.scene.run(SceneKeys.Author);
+      }
+    });
     // 退出游戏
     this.ExitGameLabel = this.add.text(30, height / 2 + 90, '退出游戏', {
       fontSize: '24px',

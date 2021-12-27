@@ -7,6 +7,7 @@ import Game from './scenes/Game';
 import StartGame from './scenes/StartGame';
 import GameOver from './scenes/GameOver';
 import Music from './runtime/music';
+import Author from './scenes/Author';
 export default class Main {
     constructor() {
         this.config = {};
@@ -30,7 +31,7 @@ export default class Main {
                 },
             },
             // 注册场景：Preloader -> StartGame -> Game -> GameOver
-            scene: [Preloader, StartGame, Game, GameOver],
+            scene: [Preloader, StartGame, Game, GameOver, Author],
         };
         this.create();
     }
