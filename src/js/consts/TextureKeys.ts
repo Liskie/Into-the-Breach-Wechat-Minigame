@@ -20,6 +20,7 @@ enum TextureKeys {
   AlienShotPredic = 'alien_shot_predict_',
   // Grids
   ReachableGrid = 'reachable_grid',
+  AttackableGrid = 'attackable_grid',
   ActingGrid = 'acting_grid',
   // Buildings
   BuildingA = 'buildingA',
@@ -37,6 +38,17 @@ enum TextureKeys {
   Melee = 'melee_',
   Empty = 'empty',
   Box = 'box',
+  // Portraits
+  PilotGenius = 'pilot_genius',
+  PilotHotshot = 'pilot_hotshot',
+  PilotLeader = 'pilot_leader',
+  PortraitBack1 = 'portrait_back_1',
+  PortraitBackground = 'portrait_background',
+  // Weapons
+  MechTankBrute = 'mech_tank_brute',
+  // Repairs
+  Repair = 'repair',
+
 }
 
 export default TextureKeys;

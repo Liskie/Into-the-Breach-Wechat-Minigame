@@ -21,6 +21,7 @@ var TextureKeys;
     TextureKeys["AlienShotPredic"] = "alien_shot_predict_";
     // Grids
     TextureKeys["ReachableGrid"] = "reachable_grid";
+    TextureKeys["AttackableGrid"] = "attackable_grid";
     TextureKeys["ActingGrid"] = "acting_grid";
     // Buildings
     TextureKeys["BuildingA"] = "buildingA";
@@ -38,5 +39,15 @@ var TextureKeys;
     TextureKeys["Melee"] = "melee_";
     TextureKeys["Empty"] = "empty";
     TextureKeys["Box"] = "box";
+    // Portraits
+    TextureKeys["PilotGenius"] = "pilot_genius";
+    TextureKeys["PilotHotshot"] = "pilot_hotshot";
+    TextureKeys["PilotLeader"] = "pilot_leader";
+    TextureKeys["PortraitBack1"] = "portrait_back_1";
+    TextureKeys["PortraitBackground"] = "portrait_background";
+    // Weapons
+    TextureKeys["MechTankBrute"] = "mech_tank_brute";
+    // Repairs
+    TextureKeys["Repair"] = "repair";
 })(TextureKeys || (TextureKeys = {}));
 export default TextureKeys;

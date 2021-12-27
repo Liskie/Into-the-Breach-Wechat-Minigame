@@ -11,6 +11,18 @@ enum TextureProperties {
   Building_B_collapseHeight = 40,
   MountainDeathWidth = 74,
   MountainDeathHeight = 56,
+  // portraits
+  PilotWidth = 61,
+  PilotHeight = 61,
+  // weapons
+  MechTankBruteWidth = 60,
+  MechTankBruteHeight = 40,
+  // repairs
+  RepairWidth = 32,
+  RepairHeight = 80,
+  // others
+  Margin = 2,
+  Padding = 4,
 }
 
 export default TextureProperties;

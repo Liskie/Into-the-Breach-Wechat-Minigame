@@ -34,17 +34,15 @@ export class Building extends Unit {
                 .setInteractive();
             return buildingSprite;
         }
-        else {
-            let txtk = TextureKeys.MountainA;
-            if (isBroken) {
-                txtk = TextureKeys.MountainBroken;
-            }
-            const buildingSprite = game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], txtk)
-                .setOrigin(0.35, 0.65)
-                .setScale(BuildingProperties.buildingMountainScale, BuildingProperties.buildingMountainScale)
-                .setInteractive();
-            return buildingSprite;
+        let txtk = TextureKeys.MountainA;
+        if (isBroken) {
+            txtk = TextureKeys.MountainBroken;
         }
+        const buildingSprite = game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], txtk)
+            .setOrigin(0.35, 0.65)
+            .setScale(BuildingProperties.buildingMountainScale, BuildingProperties.buildingMountainScale)
+            .setInteractive();
+        return buildingSprite;
     }
     copySprite() {
         return Building.getSprite(this.game, this.coords, this.ruinFlag, this.hp == 1);

@@ -48,10 +48,10 @@ export default class Game extends Phaser.Scene {
     this.load.spritesheet(TextureKeys.CarbEmerge,
       'images/units/aliens/carb_emerge.png',
       { frameWidth: TextureProperties.CarbEmergeWidth, frameHeight: TextureProperties.CarbEmergeHeight });
-    for(let i = 0; i < 2; i++){
-      this.load.image(TextureKeys.AlienShotPredic + i.toString(), 'images/units/aliens/projectile_arrow_' + i.toString() +'.png');
-      this.load.image(TextureKeys.CarbShot + i.toString(), 'images/units/aliens/shot_firefly_' + i.toString() +'.png');
-      this.load.image(TextureKeys.MechTankShot + i.toString(), 'images/units/player/shot_mechtank_' + i.toString() +'.png');
+    for (let i = 0; i < 2; i++) {
+      this.load.image(TextureKeys.AlienShotPredic + i.toString(), `images/units/aliens/projectile_arrow_${i.toString()}.png`);
+      this.load.image(TextureKeys.CarbShot + i.toString(), `images/units/aliens/shot_firefly_${i.toString()}.png`);
+      this.load.image(TextureKeys.MechTankShot + i.toString(), `images/units/player/shot_mechtank_${i.toString()}.png`);
     }
 
     // buildings
@@ -74,12 +74,12 @@ export default class Game extends Phaser.Scene {
     this.load.image(TextureKeys.EmergingAttack, 'images/buildings/icon_emerge.png');
 
     // icons
-    for(let i = 0; i <= 9; i++){
-      this.load.image(TextureKeys.Number + i.toString(), 'images/icon/Text_' + i.toString() +'.png');
+    for (let i = 0; i <= 9; i++) {
+      this.load.image(TextureKeys.Number + i.toString(), `images/icon/Text_${i.toString()}.png`);
     }
-    for(let i = 1; i <= 4; i++){
-      this.load.image(TextureKeys.Arrow + i.toString(), 'images/icon/arrow_' + i.toString() +'.png');
-      this.load.image(TextureKeys.Melee + i.toString(), 'images/icon/melee_' + i.toString() +'.png');
+    for (let i = 1; i <= 4; i++) {
+      this.load.image(TextureKeys.Arrow + i.toString(), `images/icon/arrow_${i.toString()}.png`);
+      this.load.image(TextureKeys.Melee + i.toString(), `images/icon/melee_${i.toString()}.png`);
     }
     this.load.image(TextureKeys.Empty, 'images/icon/empty.png');
     this.load.image(TextureKeys.Box, 'images/icon/push_box.png');
@@ -87,6 +87,24 @@ export default class Game extends Phaser.Scene {
     // levels
     this.load.json(LevelKeys.Level1, 'levels/1.json');
     this.load.json(LevelKeys.Building, 'levels/building.json');
+
+    // portraits
+    this.load.spritesheet(TextureKeys.PilotGenius,
+      'images/pilots/Pilot_Genius_blink.png',
+      { frameWidth: TextureProperties.PilotWidth, frameHeight: TextureProperties.PilotHeight });
+    this.load.spritesheet(TextureKeys.PilotLeader,
+      'images/pilots/Pilot_Leader_blink.png',
+      { frameWidth: TextureProperties.PilotWidth, frameHeight: TextureProperties.PilotHeight });
+    this.load.spritesheet(TextureKeys.PilotHotshot,
+      'images/pilots/Pilot_Hotshot_blink.png',
+      { frameWidth: TextureProperties.PilotWidth, frameHeight: TextureProperties.PilotHeight });
+    this.load.image(TextureKeys.PortraitBack1, 'images/pilots/back_1.png');
+
+    // weapons
+    this.load.image(TextureKeys.MechTankBrute, 'images/weapons/brute_tankmech.png');
+
+    // repairs
+    this.load.image(TextureKeys.Repair, 'images/weapons/repair.png');
 
     const { width, height } = this.game.scale;
     const style = { font: '18px monospace', fill: '#ffffff' }; // 设置显示文本的样式

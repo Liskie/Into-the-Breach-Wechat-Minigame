@@ -27,34 +27,28 @@ export class Alien extends Unit {
         if (number > 1 || number < 0) {
             return game.getEmptySprite(coords);
         }
-        else {
-            return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.AlienShotPredic + number.toString())
-                .setOrigin(0.5, 0.5)
-                .setScale(0.8, 0.8)
-                .setInteractive();
-        }
+        return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.AlienShotPredic + number.toString())
+            .setOrigin(0.5, 0.5)
+            .setScale(0.8, 0.8)
+            .setInteractive();
     }
     static getSpriteNumber(game, coords, num) {
         if (num > 9 || num < 0) {
             return game.getEmptySprite(coords);
         }
-        else {
-            return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.Number + num.toString())
-                .setOrigin(0, 0)
-                .setScale(0.5, 0.5)
-                .setInteractive();
-        }
+        return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.Number + num.toString())
+            .setOrigin(0, 0)
+            .setScale(0.5, 0.5)
+            .setInteractive();
     }
     static getSpriteAtkIntention(game, coords, num) {
         if (num > 4 || num <= 0) {
             return game.getEmptySprite(coords);
         }
-        else {
-            return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.Melee + num.toString())
-                .setOrigin(0.5 + 0.3 * Alien.spriteShotPos[num][0], 0.5 + 0.3 * Alien.spriteShotPos[num][1])
-                .setScale(0.8, 0.8)
-                .setInteractive();
-        }
+        return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.Melee + num.toString())
+            .setOrigin(0.5 + 0.3 * Alien.spriteShotPos[num][0], 0.5 + 0.3 * Alien.spriteShotPos[num][1])
+            .setScale(0.8, 0.8)
+            .setInteractive();
     }
     static getSpriteBox(game, coords) {
         var _a;
@@ -89,10 +83,10 @@ export class Alien extends Unit {
         this.cleanSpriteNA();
         this.setAct(true);
         if (!(this.atkIntention <= 0 || this.atkIntention > 4)) {
-            let atkPos = this.getAttackPos(this.coords);
+            const atkPos = this.getAttackPos(this.coords);
             if (atkPos.x >= 0 && atkPos.y >= 0 && atkPos.x < 8 && atkPos.y < 8) {
-                let shot = new Shot(this.game, this, this.getShotRoad(), this.atkIntention);
-                //this.game.board[atkPos.x][atkPos.y]?.beAttacked(1);
+                const shot = new Shot(this.game, this, this.getShotRoad(), this.atkIntention);
+                // this.game.board[atkPos.x][atkPos.y]?.beAttacked(1);
             }
             this.atkIntention = -1;
             this.cleanShotPredict();
@@ -123,13 +117,13 @@ export class Alien extends Unit {
         }
         this.spriteShotPredict = [];
         if (this.hp > 0) {
-            let road = this.getShotRoad();
+            const road = this.getShotRoad();
             for (let i = 1; i < road.length - 1; i++) {
                 if (road[i].x >= 0 && road[i].x < 8 && road[i].y >= 0 && road[i].y < 8) {
                     this.spriteShotPredict.push(Alien.getOneShotPredict(this.game, road[i], this.atkIntention < 3 ? 1 : 0));
                 }
             }
-            let i = road.length - 1;
+            const i = road.length - 1;
             if (i >= 0 && road[i].x >= 0 && road[i].x < 8 && road[i].y >= 0 && road[i].y < 8) {
                 this.spriteShotPredict.push(Alien.getSpriteBox(this.game, road[i]));
             }

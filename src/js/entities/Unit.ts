@@ -27,19 +27,22 @@ export class Unit {
     this.spriteShowAct = game.getEmptySprite(coords);
     this.spriteShowAct.destroy();
   }
-  onClick(){
 
+  public active: boolean = false;
+
+  onClick() {
   }
   public spriteShowAct: Phaser.Physics.Arcade.Sprite;
 
-  static getSpriteShowAct(game: Game, coords: Coords){
+  static getSpriteShowAct(game: Game, coords: Coords) {
     return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.ActingGrid)
       .setOrigin(0.5, 0.5)
       .setInteractive();
   }
 
-  spriteLink(){
+  spriteLink() {
   }
+
   checkCoords(coords: Coords, dis: Array<Array<number>>, nowDis: number) {
     if (coords.x > 7 || coords.y > 7 || coords.x < 0 || coords.y < 0) {
       return false;
@@ -125,36 +128,36 @@ export class Unit {
     return res;
   }
 
-  copySprite(){
+  copySprite() {
     return this.sprite;
   }
 
   moveTo(des_coords: Coords) {
+    this.setAct(false);
     const path = this.findPathToCoords(des_coords);
-    if(path.length > 0){
+    if (path.length > 0) {
       this.setAct(true);
       let i = 0;
-      if(this.game.aliensEmergeBoard[path[i].x][path[i].y] != null){
+      if (this.game.aliensEmergeBoard[path[i].x][path[i].y] != null) {
         this.refreshSprite();
       }
-      let oldCoords = this.coords;
+      const oldCoords = this.coords;
       this.moveStepTo(path[i]);
       i++;
-      if(this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y] != null){
+      if (this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y] != null) {
         this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y]?.checkSpriteAtk();
       }
       this.game.time.addEvent({
         delay: UnitProperties.MoveDelay, // ms
         callback: () => {
-          if(i != path.length){
-            if(this.game.aliensEmergeBoard[path[i].x][path[i].y] != null){
+          if (i != path.length) {
+            if (this.game.aliensEmergeBoard[path[i].x][path[i].y] != null) {
               this.refreshSprite();
             }
             this.moveStepTo(path[i]);
             i += 1;
-          }
-          else{
-            if(this.game.aliensEmergeBoard[this.coords.x][this.coords.y] != null){
+          } else {
+            if (this.game.aliensEmergeBoard[this.coords.x][this.coords.y] != null) {
               this.game.aliensEmergeBoard[this.coords.x][this.coords.y]?.checkSpriteAtk();
             }
             this.game.refreshAlienShotPredict();
@@ -180,16 +183,16 @@ export class Unit {
     this.spriteShowAct.setPosition(wxCoords[0], wxCoords[1]);
   }
 
-  dead(){
-    
+  dead() {
+
   }
-  beAttacked(damage: number){
-    if(this.hp > 0){
+
+  beAttacked(damage: number) {
+    if (this.hp > 0) {
       this.hp -= damage;
-      if(this.hp <= 0){
+      if (this.hp <= 0) {
         this.dead();
-      }
-      else{
+      } else {
         const tsprite = this.copySprite().setAlpha(0.5).setBlendMode('ADD');
         this.game.time.addEvent({
           callback: () => {
@@ -203,22 +206,21 @@ export class Unit {
       }
     }
   }
+
   attack() {
 
   }
-  realAttack(tgt: Unit){
+  realAttack(tgt: Unit) {
     tgt.beAttacked(1);
   }
-  pushed(dtCoords: Coords){
+  pushed(dtCoords: Coords) {
     const tgtCoords = new Coords(this.coords.x + dtCoords.x, this.coords.y + dtCoords.y);
-    if(tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0){
+    if (tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0) {
       return;
     }
-    if(this.game.board[tgtCoords.x][tgtCoords.y] == null){
+    if (this.game.board[tgtCoords.x][tgtCoords.y] == null) {
       this.moveTo(tgtCoords);
-      return;
-    }
-    else{
+    } else {
       this.beAttacked(1);
       this.game.board[tgtCoords.x][tgtCoords.x]?.beAttacked(1);
     }
@@ -226,16 +228,17 @@ export class Unit {
 
   refreshState() {
   }
-  setAct(sign: boolean){
-    if(sign){
+  setAct(sign: boolean) {
+    if (sign) {
       this.spriteShowAct = Unit.getSpriteShowAct(this.game, this.coords);
       this.refreshSprite();
-    }
-    else{
+      this.active = true;
+    } else {
       this.spriteShowAct.destroy();
+      this.active = false;
     }
   }
-  refreshSprite(){
+  refreshSprite() {
     this.sprite.destroy(true);
     this.sprite = this.copySprite();
     this.spriteLink();

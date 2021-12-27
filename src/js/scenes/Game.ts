@@ -3,9 +3,8 @@ import TextureKeys from '../consts/TextureKeys';
 // eslint-disable-next-line import/no-cycle
 import { Unit } from '../entities/Unit';
 // eslint-disable-next-line import/no-duplicates
-import { screenWidth as width, screenHeight as height } from '../utils/index';
 // eslint-disable-next-line import/no-duplicates
-import { getScale } from '../utils/index';
+import { getScale, screenHeight as height, screenWidth as width } from '../utils/index';
 // eslint-disable-next-line import/no-cycle
 import { Mech } from '../entities/Mech';
 // eslint-disable-next-line import/no-cycle
@@ -20,6 +19,9 @@ import LevelKeys from '../consts/LevelKeys';
 // eslint-disable-next-line import/no-cycle
 import { Building } from '../entities/Building';
 import UnitProperties from '../consts/UnitProperties';
+import TextureProperties from '../consts/TextureProperties';
+import MechProperties from '../consts/MechProperties';
+import Colors from '../consts/Colors';
 
 export default class Game extends Phaser.Scene {
   public _scale!: number;
@@ -40,7 +42,7 @@ export default class Game extends Phaser.Scene {
   private gameTurnLabel!: Phaser.GameObjects.Text;
   // 游戏轮数
   private Turn: number = 5;
-  private dotoX: number = 30;
+  private dotoX: number = 40;
   // 剩余血量
   private bloodNum: number = 4;
 
@@ -49,14 +51,23 @@ export default class Game extends Phaser.Scene {
   public board: Array<Array<Unit | null>> = new Array<Array<Unit | null>>();
   public boardWXCoords: Array<Array<Array<number>>> = [];
   // mechs
+  public mechs: Array<Mech> = [];
+  public selectedMech!: Mech | null;
   public possibleMoveDestinations: Array<Phaser.GameObjects.Image> = [];
   public possibleMoveDestinationsShowerMech: Mech | null = null;
+  public possibleAttackDestinations: Array<Phaser.GameObjects.Image> = [];
   // aliens
   public aliens: Array<Carb> = [];
   public aliensEmergeBoard: Array<Array<AliensEmerge | null>> = new Array<Array<AliensEmerge | null>>();
   public aliensEmerges: Array<AliensEmerge> = new Array<AliensEmerge>();
   // buildings
   public showerBuilding: Mech | null = null;
+  // portraits and status
+  public pilotKeys = [TextureKeys.PilotLeader, TextureKeys.PilotGenius, TextureKeys.PilotHotshot];
+  public pilotBackgrounds = new Map();
+  public currentPilotKey!: string | null;
+  public currentPortraitAndAtkBtns!: Phaser.GameObjects.Group | null;
+  public mechHpBars = new Map();
 
   constructor() {
     // 注册场景名称
@@ -82,6 +93,7 @@ export default class Game extends Phaser.Scene {
     this.buttonEvent();
     this.drawTime();
     this.drawTurn();
+    // this.drawPortraitAndAttackBtn();
     // 先屏蔽绘制进度的
     // this.drawbloodEvent(1);
 
@@ -90,6 +102,8 @@ export default class Game extends Phaser.Scene {
     this.createMechs();
     this.createAliens();
     this.createBuilding();
+
+    this.drawMechStatusList();
 
     // First turn
     this.alienMove();
@@ -122,8 +136,8 @@ export default class Game extends Phaser.Scene {
   }
 
   update() {
-    if(!this.isGameEnd){
-      if(this.Turn >= 0){
+    if (!this.isGameEnd) {
+      if (this.Turn >= 0) {
         this.gameTurnLabel.setText(this.Turn.toString());
       }
       this.gameTimeLabel.setText(this.intoTime());
@@ -248,17 +262,120 @@ export default class Game extends Phaser.Scene {
     graphics.fillRect(x - i * dx, y, bloodBgWidth / 30, bloodBgHight / 4);
   }
 
+  drawPortraitAndAttackBtn(pilotKey: string) {
+    this.currentPilotKey = pilotKey;
+    // Portrait
+    const margin = TextureProperties.Margin;
+    const portraitY = height / 2 + height / 4;
+    this.currentPortraitAndAtkBtns = this.add.group();
+    this.currentPortraitAndAtkBtns.add(this.add.graphics()
+      .fillStyle(Colors.MainPurple)
+      .fillRect(this.dotoX, portraitY,
+        TextureProperties.PilotWidth + margin * 2,
+        TextureProperties.PilotHeight + margin * 2));
+    this.currentPortraitAndAtkBtns.add(this.add.image(this.dotoX + margin, portraitY + margin, TextureKeys.PortraitBack1)
+      .setOrigin(0, 0));
+    this.currentPortraitAndAtkBtns.add(this.add.image(this.dotoX + margin, portraitY + margin, pilotKey)
+      .setOrigin(0, 0));
+
+    // Repair
+    const padding = TextureProperties.Padding;
+    const repairX = this.dotoX + margin * 2 + TextureProperties.PilotWidth + padding;
+    const repairY = portraitY;
+    const repairScale = TextureProperties.PilotHeight / TextureProperties.RepairHeight;
+    this.currentPortraitAndAtkBtns.add(this.add.graphics()
+      .fillStyle(Colors.MainPurple)
+      .fillRect(repairX, repairY,
+        TextureProperties.RepairWidth * repairScale + margin * 2,
+        TextureProperties.RepairHeight * repairScale + margin * 2));
+    this.currentPortraitAndAtkBtns.add(this.add.image(repairX + margin, repairY + margin, TextureKeys.Repair)
+      .setScale(repairScale)
+      .setOrigin(0, 0)
+      .setInteractive()
+      .on(Phaser.Input.Events.POINTER_DOWN, () => {
+        if (this.selectedMech instanceof Mech) {
+          this.selectedMech.repair();
+        }
+      }));
+
+    // Weapon
+    const weaponX = repairX + margin * 2 + TextureProperties.RepairWidth * repairScale + padding;
+    const weaponY = portraitY;
+    const weaponScale = TextureProperties.PilotHeight / TextureProperties.MechTankBruteHeight;
+    this.currentPortraitAndAtkBtns.add(this.add.graphics()
+      .fillStyle(Colors.MainPurple)
+      .fillRect(weaponX, weaponY,
+        TextureProperties.MechTankBruteWidth * weaponScale + margin * 2,
+        TextureProperties.MechTankBruteHeight * weaponScale + margin * 2));
+    this.currentPortraitAndAtkBtns.add(this.add.image(weaponX + margin, weaponY + margin, TextureKeys.MechTankBrute)
+      .setScale(weaponScale)
+      .setOrigin(0, 0)
+      .setInteractive()
+      .on(Phaser.Input.Events.POINTER_DOWN, () => {
+        if (this.selectedMech instanceof Mech) {
+          if (this.isPlayerTurn && this.selectedMech.hp > 0) {
+            if (this.possibleAttackDestinations.length === 0) {
+              this.selectedMech.showPossibleAttackDestinations();
+            } else {
+              this.selectedMech.clearAttackDestination();
+            }
+          }
+        }
+      }));
+  }
+
+  drawMechStatusList() {
+    const margin = TextureProperties.Margin;
+    const padding = TextureProperties.Padding;
+    const innerPadding = margin / 2;
+    const portraitY = height / 2 - height / 4 - height / 32;
+    const hpBarY = portraitY + TextureProperties.PilotHeight + margin * 2 + padding;
+    const hpSize = 8;
+    for (let i = 0; i < this.pilotKeys.length; i++) {
+      const currentX = this.dotoX + (TextureProperties.PilotWidth + padding + margin * 2) * i;
+      // Portrait
+      const portraitBackground = this.add.rectangle(currentX, portraitY,
+        TextureProperties.PilotWidth + margin * 2,
+        TextureProperties.PilotHeight + margin * 2, Colors.MainPurple)
+        .setOrigin(0, 0);
+      this.pilotBackgrounds.set(this.pilotKeys[i], portraitBackground);
+      this.add.image(currentX + margin, portraitY + margin, TextureKeys.PortraitBack1)
+        .setOrigin(0, 0);
+      this.add.image(currentX + margin, portraitY + margin, this.pilotKeys[i])
+        .setOrigin(0, 0)
+        .setInteractive()
+        .on(Phaser.Input.Events.POINTER_DOWN, () => {
+          this.mechs[i].onClick();
+        });
+      // HP bar
+      const currentHpBarX = currentX;
+      const hpBarWidth = hpSize * this.mechs[i].maxHp + margin * 2;
+      const hpBarHeight = hpSize + margin * 2;
+      this.add.graphics()
+        .fillStyle(Colors.MainPurple)
+        .fillRect(currentHpBarX, hpBarY, hpBarWidth, hpBarHeight);
+      this.add.graphics()
+        .fillStyle(Colors.Black)
+        .fillRect(currentHpBarX + margin, hpBarY + margin, hpBarWidth - margin * 2, hpBarHeight - margin * 2);
+      this.mechHpBars.set(this.pilotKeys[i], new Map());
+      for (let hpIndex = 0; hpIndex < this.mechs[i].maxHp; hpIndex++) {
+        this.mechHpBars.get(this.pilotKeys[i]).set(hpIndex + 1, this.add.rectangle(currentHpBarX + margin + innerPadding + hpSize * hpIndex, hpBarY + margin + innerPadding,
+          hpSize - innerPadding * 2, hpSize - innerPadding * 2, Colors.Green)
+          .setOrigin(0, 0));
+      }
+    }
+  }
+
   createBuilding() {
     const buildingJson = this.cache.json.get(LevelKeys.Building);
     for (let i = 0; i < buildingJson.initBuildingPos.length; i++) {
       const xCoord = buildingJson.initBuildingPos[i][0];
       const yCoord = buildingJson.initBuildingPos[i][1];
       if (this.board[xCoord][yCoord] != null) {
-        console.log('建筑和机甲的坐标冲突');
         // eslint-disable-next-line no-continue
         continue;
       }
-      this.board[xCoord][yCoord] = Building.newUnit(this, new Coords(xCoord, yCoord), i % 2 == 0);
+      this.board[xCoord][yCoord] = Building.newUnit(this, new Coords(xCoord, yCoord), i % 2 === 0);
     }
   }
 
@@ -280,7 +397,9 @@ export default class Game extends Phaser.Scene {
     for (let i = 0; i < levelJson.initMechPos.length; i++) {
       const xCoord = levelJson.initMechPos[i][0];
       const yCoord = levelJson.initMechPos[i][1];
-      this.board[xCoord][yCoord] = Mech.newUnit(this, new Coords(xCoord, yCoord));
+      const mech = Mech.newUnit(this, new Coords(xCoord, yCoord), this.pilotKeys[i]);
+      this.board[xCoord][yCoord] = mech;
+      this.mechs.push(mech);
     }
   }
 
@@ -296,7 +415,7 @@ export default class Game extends Phaser.Scene {
 
   // Main game logic
   doTurn() {
-    if(this.isGameEnd){
+    if (this.isGameEnd) {
       return;
     }
     // oneTurn: alienArise -> alienMove -> showAlienArisePos
@@ -316,7 +435,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.alienEmerge();
       },
-      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12, // ms
+      delay: this.cntAliens * UnitProperties.ShotDelay * 12, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -324,7 +443,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.alienMove();
       },
-      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200, // ms
+      delay: this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -332,7 +451,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.addAlienEmergePos();
       },
-      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6, // ms
+      delay: this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -340,7 +459,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.showEnvEffects();
       },
-      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200, // ms
+      delay: this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -348,7 +467,7 @@ export default class Game extends Phaser.Scene {
       callback: () => {
         this.playerMoveAndAttack();
       },
-      delay: 0 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200 + 0, // ms
+      delay: this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200, // ms
       callbackScope: this,
       repeat: 0
     });
@@ -478,18 +597,18 @@ export default class Game extends Phaser.Scene {
   public isPlayerTurn: boolean = false;
 
   playerMoveAndAttack() {
-    if (this.gameHp <= 0 || this.cntPlayer <= 0 || this.Turn == -1){
-      Game.isGameWin = (this.gameHp <= 0 || this.cntPlayer <= 0)  ? false : true;
+    if (this.gameHp <= 0 || this.cntPlayer <= 0 || this.Turn === -1) {
+      Game.isGameWin = !((this.gameHp <= 0 || this.cntPlayer <= 0));
       this.isGameEnd = true;
       Game.totalScore = (Game.isGameWin ? 10000 : 0) + this.cntPlayer * 500 + this.gameHp * 300 + this.cntAlienKill * 250;
       this.scene.run(SceneKeys.GameOver);
-      return ;
+      return;
     }
 
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
         if (this.board[i][j] instanceof Mech) {
-          (<Mech> this.board[i][j]).movesLeft = 1;
+          (<Mech> this.board[i][j]).refreshState();
         }
       }
     }
@@ -501,16 +620,16 @@ export default class Game extends Phaser.Scene {
   }
 
   alienAttack() {
-    if (this.cntAliens != 0) {
+    if (this.cntAliens !== 0) {
       let i = 0;
-      while(i < this.aliens.length && this.aliens[i].hp <= 0){
+      while (i < this.aliens.length && this.aliens[i].hp <= 0) {
         i++;
       }
       this.aliens[i].attack();
       i++;
       this.time.addEvent({
         callback: () => {
-          while(i < this.aliens.length && this.aliens[i].hp <= 0){
+          while (i < this.aliens.length && this.aliens[i].hp <= 0) {
             i++;
           }
           if (i < this.aliens.length) {
@@ -587,6 +706,27 @@ export default class Game extends Phaser.Scene {
       .setAlpha(0.3)
       .generateTexture(TextureKeys.ReachableGrid, 56, 42)
       .destroy();
+    // Generate attack destination grid texture
+    this.add.graphics()
+      .fillStyle(Colors.Orange)
+      .fillPoints([
+        new Phaser.Geom.Point(28.5, 0),
+        new Phaser.Geom.Point(0, 21.5),
+        new Phaser.Geom.Point(28.5, 42),
+        new Phaser.Geom.Point(56, 21.5)
+      ], true, true)
+      .setScale(this._scale)
+      .setAlpha(0.3)
+      .generateTexture(TextureKeys.AttackableGrid, 56, 42)
+      .destroy();
+    // Generate portrait background
+    this.add.graphics()
+      .fillStyle(Colors.MainPurple)
+      .fillRect(0, 0, 120, 50)
+      .setScale(this._scale)
+      .generateTexture(TextureKeys.PortraitBackground, 120, 50)
+      .destroy();
+    // Ask BBY
     this.add.graphics()
       .fillStyle(0xAFAFAF)
       .fillPoints([
@@ -599,7 +739,6 @@ export default class Game extends Phaser.Scene {
       .setAlpha(0.3)
       .generateTexture(TextureKeys.ActingGrid, 56, 42)
       .destroy();
-    
   }
 
   dead(poorGuy: Mech | Building | Carb) {
@@ -648,19 +787,22 @@ export default class Game extends Phaser.Scene {
       repeat: 0
     });
   }
-  getEmptySprite(coords: Coords){
+
+  getEmptySprite(coords: Coords) {
     return this.physics.add.sprite(this.boardWXCoords[coords.x][coords.y][0], this.boardWXCoords[coords.x][coords.y][1], TextureKeys.Empty)
-    .setOrigin(0.5, 0.5)
-    .setScale(1, 1)
-    .setInteractive();
+      .setOrigin(0.5, 0.5)
+      .setScale(1, 1)
+      .setInteractive();
   }
-  refreshAlienShotPredict(){
-    for(let i = 0; i < this.aliens.length; i++){
+
+  refreshAlienShotPredict() {
+    for (let i = 0; i < this.aliens.length; i++) {
       this.aliens[i].refreshShotPredict();
     }
   }
-  isShotPassalbe(i: Coords){
-    if(this.board[i.x][i.y] == null || (this.board[i.x][i.y] instanceof Mech && (<Unit>this.board[i.x][i.y]).hp <= 0)){
+
+  isShotPassable(i: Coords) {
+    if (this.board[i.x][i.y] == null || (this.board[i.x][i.y] instanceof Mech && (<Unit> this.board[i.x][i.y]).hp <= 0)) {
       return true;
     }
     return false;

@@ -10,6 +10,7 @@ export class Unit {
         this.atkRange = atkRange;
         this.hp = hp;
         this.maxHp = maxHp;
+        this.active = false;
         this.dCoords = [[1, 0], [-1, 0], [0, 1], [0, -1]];
         this.path = new Array();
         this.game = game;
@@ -117,6 +118,7 @@ export class Unit {
     }
     moveTo(des_coords) {
         var _a;
+        this.setAct(false);
         const path = this.findPathToCoords(des_coords);
         if (path.length > 0) {
             this.setAct(true);
@@ -124,7 +126,7 @@ export class Unit {
             if (this.game.aliensEmergeBoard[path[i].x][path[i].y] != null) {
                 this.refreshSprite();
             }
-            let oldCoords = this.coords;
+            const oldCoords = this.coords;
             this.moveStepTo(path[i]);
             i++;
             if (this.game.aliensEmergeBoard[oldCoords.x][oldCoords.y] != null) {
@@ -201,7 +203,6 @@ export class Unit {
         }
         if (this.game.board[tgtCoords.x][tgtCoords.y] == null) {
             this.moveTo(tgtCoords);
-            return;
         }
         else {
             this.beAttacked(1);
@@ -214,9 +215,11 @@ export class Unit {
         if (sign) {
             this.spriteShowAct = Unit.getSpriteShowAct(this.game, this.coords);
             this.refreshSprite();
+            this.active = true;
         }
         else {
             this.spriteShowAct.destroy();
+            this.active = false;
         }
     }
     refreshSprite() {
