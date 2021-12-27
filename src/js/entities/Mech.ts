@@ -106,7 +106,7 @@ export class Mech extends Unit {
 
   static getSprite(game: Game, coords: Coords) {
     const mechSprite = game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.MechTankA)
-      .setOrigin(0.5, 0.5)
+      .setOrigin(0.4, 0.5)
       .setScale(game._scale, game._scale)
       .setInteractive();
     mechSprite.anims.play('mech-normal');
