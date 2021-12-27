@@ -29,6 +29,10 @@ export class Mech extends Unit {
   }
 
   onClick() {
+    // Check if this is alive
+    if (this.hp <= 0 || !this.game.isPlayerTurn) {
+      return;
+    }
     // Highlight
     for (let i = 0; i < this.game.mechs.length; i++) {
       this.game.mechs[i].setAct(false);

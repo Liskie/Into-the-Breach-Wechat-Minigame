@@ -79,22 +79,30 @@ export default class Game extends Phaser.Scene {
         this.createBuilding();
         this.drawMechStatusList();
         // First turn
-        this.alienMove();
+        this.showAlienTurnBanner();
+        this.time.addEvent({
+            callback: () => {
+                this.alienMove();
+            },
+            delay: 1600,
+            callbackScope: this,
+            repeat: 0
+        });
         this.cntAliens = 3;
         this.time.addEvent({
             callback: () => {
                 this.addAlienEmergePos();
             },
-            delay: 3 * UnitProperties.MoveDelay * 6,
+            delay: 1600 + 3 * UnitProperties.MoveDelay * 6,
             callbackScope: this,
             repeat: 0
         });
         this.cntEmerges = 2;
         this.time.addEvent({
             callback: () => {
-                this.showEnvEffects();
+                this.showPlayerTurnBanner();
             },
-            delay: 3 * UnitProperties.MoveDelay * 6 + 2 * 1200,
+            delay: 1600 + 3 * UnitProperties.MoveDelay * 6 + 2 * 1200,
             callbackScope: this,
             repeat: 0
         });
@@ -102,7 +110,7 @@ export default class Game extends Phaser.Scene {
             callback: () => {
                 this.playerMoveAndAttack();
             },
-            delay: 3 * UnitProperties.MoveDelay * 6 + 2 * 1200 + 0,
+            delay: 1600 + 3 * UnitProperties.MoveDelay * 6 + 2 * 1200 + 1600,
             callbackScope: this,
             repeat: 0
         });
@@ -355,7 +363,6 @@ export default class Game extends Phaser.Scene {
             this.board[xCoord][yCoord] = Carb.newUnit(this, new Coords(xCoord, yCoord));
         }
     }
-    // Main game logic
     doTurn() {
         if (this.isGameEnd) {
             return;
@@ -364,12 +371,12 @@ export default class Game extends Phaser.Scene {
         // -> showEnvEffects -> playerMove&Attack -> takeEnvEffects -> alienAttack
         console.log(this.cntAliens.toString());
         this.isPlayerTurn = false;
-        this.takeEnvEffects();
+        this.showAlienTurnBanner();
         this.time.addEvent({
             callback: () => {
                 this.alienAttack();
             },
-            delay: 0,
+            delay: 1600,
             callbackScope: this,
             repeat: 0
         });
@@ -377,7 +384,7 @@ export default class Game extends Phaser.Scene {
             callback: () => {
                 this.alienEmerge();
             },
-            delay: this.cntAliens * UnitProperties.ShotDelay * 12,
+            delay: 1600 + this.cntAliens * UnitProperties.ShotDelay * 12,
             callbackScope: this,
             repeat: 0
         });
@@ -385,7 +392,7 @@ export default class Game extends Phaser.Scene {
             callback: () => {
                 this.alienMove();
             },
-            delay: this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200,
+            delay: 1600 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200,
             callbackScope: this,
             repeat: 0
         });
@@ -393,15 +400,15 @@ export default class Game extends Phaser.Scene {
             callback: () => {
                 this.addAlienEmergePos();
             },
-            delay: this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6,
+            delay: 1600 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6,
             callbackScope: this,
             repeat: 0
         });
         this.time.addEvent({
             callback: () => {
-                this.showEnvEffects();
+                this.showPlayerTurnBanner();
             },
-            delay: this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200,
+            delay: 1600 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200,
             callbackScope: this,
             repeat: 0
         });
@@ -409,7 +416,7 @@ export default class Game extends Phaser.Scene {
             callback: () => {
                 this.playerMoveAndAttack();
             },
-            delay: this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200,
+            delay: 1600 + this.cntAliens * UnitProperties.ShotDelay * 12 + this.cntEmerges * 1200 + (this.cntAliens + this.cntEmerges) * UnitProperties.MoveDelay * 6 + (this.Turn % LevelProperties.EmergeMod == LevelProperties.EmergeRemainder ? LevelProperties.EmergeNum : 0) * 1200 + 1600,
             callbackScope: this,
             repeat: 0
         });
@@ -726,6 +733,83 @@ export default class Game extends Phaser.Scene {
         for (let i = 0; i < this.aliens.length; i++) {
             this.aliens[i].refreshShotPredict();
         }
+    }
+    showPlayerTurnBanner() {
+        const trect = this.add.rectangle(width / 2, height / 2, width, 100, 0x131620, 0.9).setOrigin(0.5, 0.5);
+        const ttext = this.add.text(width / 2, height / 2, '玩 家 回 合', {
+            fontSize: '30px',
+            color: '#ffffff',
+            // backgroundColor: '#000000',
+            shadow: { fill: true, blur: 0, offsetY: 0 },
+            padding: { left: 20, right: 20, top: 10, bottom: 10 },
+        }).setScrollFactor(0).setOrigin(0.5, 0.5);
+        const ttext2 = this.add.text(width / 2, height / 2 + 30, `剩余${this.Turn.toString()}个回合`, {
+            fontSize: '15px',
+            color: '#ffffff',
+            // backgroundColor: '#000000',
+            shadow: { fill: true, blur: 0, offsetY: 0 },
+            padding: { left: 20, right: 20, top: 10, bottom: 10 },
+        }).setScrollFactor(0).setOrigin(0.5, 0.5);
+        let i = 10;
+        this.time.addEvent({
+            callback: () => {
+                this.time.addEvent({
+                    callback: () => {
+                        if (i == 0) {
+                            trect.destroy();
+                            ttext.destroy();
+                            ttext2.destroy();
+                        }
+                        else {
+                            i--;
+                            trect.setAlpha(0.9 * i / 10);
+                            ttext.setAlpha(i / 10);
+                            ttext2.setAlpha(i / 10);
+                        }
+                    },
+                    delay: 50,
+                    callbackScope: this,
+                    repeat: 10
+                });
+            },
+            delay: 1000,
+            callbackScope: this,
+            repeat: 0
+        });
+    }
+    showAlienTurnBanner() {
+        const trect = this.add.rectangle(width / 2, height / 2, width, 100, 0x131620, 0.9).setOrigin(0.5, 0.5);
+        const ttext = this.add.text(width / 2, height / 2, '敌 方 回 合', {
+            fontSize: '30px',
+            color: '#ffffff',
+            // backgroundColor: '#000000',
+            shadow: { fill: true, blur: 0, offsetY: 0 },
+            padding: { left: 20, right: 20, top: 10, bottom: 10 },
+        }).setScrollFactor(0).setOrigin(0.5, 0.5);
+        let i = 10;
+        this.time.addEvent({
+            callback: () => {
+                this.time.addEvent({
+                    callback: () => {
+                        if (i == 0) {
+                            trect.destroy();
+                            ttext.destroy();
+                        }
+                        else {
+                            i--;
+                            trect.setAlpha(0.9 * i / 10);
+                            ttext.setAlpha(i / 10);
+                        }
+                    },
+                    delay: 50,
+                    callbackScope: this,
+                    repeat: 10
+                });
+            },
+            delay: 1000,
+            callbackScope: this,
+            repeat: 0
+        });
     }
     isShotPassable(i) {
         if (this.board[i.x][i.y] == null || (this.board[i.x][i.y] instanceof Mech && this.board[i.x][i.y].hp <= 0)) {

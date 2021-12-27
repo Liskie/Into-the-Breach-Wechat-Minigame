@@ -3,7 +3,7 @@ import Button from '../components/Button';
 // eslint-disable-next-line import/no-cycle
 import Main from '../main';
 import { screenWidth as width, screenHeight as height } from '../utils/index';
-import Game from '../scenes/Game';
+import Game from './Game';
 
 /**
  * 游戏结束场景
@@ -11,33 +11,33 @@ import Game from '../scenes/Game';
 export default class GameOver extends Phaser.Scene {
   private isWinMessage!: Phaser.GameObjects.Text;
   private score!: Phaser.GameObjects.Text;
+  private background!: Phaser.GameObjects.Rectangle;
   constructor() {
     // 注册场景名称
     super(SceneKeys.GameOver);
   }
 
   create() {
-    this.isWinMessage = this.add.text(width / 2 - 100, height / 2 - 100, (Game.isGameWin ? 'You win !' : 'Game over !'), {
-      fontSize: '30px',
-      color: '#ffffff',
-      backgroundColor: '#000000',
-      shadow: { fill: true, blur: 0, offsetY: 0 },
-      padding: { left: 20, right: 20, top: 10, bottom: 10 },
-    }).setScrollFactor(0).setOrigin(0, 0);
-    
-    this.score = this.add.text(width / 2 - 130, height / 2 + 50, 'score: ' + Game.totalScore.toString(), {
-      fontSize: '30px',
-      color: '#ffffff',
-      backgroundColor: '#000000',
-      shadow: { fill: true, blur: 0, offsetY: 0 },
-      padding: { left: 20, right: 20, top: 10, bottom: 10 },
-    }).setScrollFactor(0).setOrigin(0, 0);
+    this.background = this.add.rectangle(width / 2, height / 2, width, 300, 0x131620, 0.9).setOrigin(0.5, 0.5);
 
-    const btn = new Button(this, 'Play Again', () => {
+    this.isWinMessage = this.add.text(width / 2, height / 2 - 80, (Game.isGameWin ? '  你 赢 了 ！' : '  你 输 了 ！'), {
+      fontSize: '30px',
+      color: '#ffffff',
+      shadow: { fill: true, blur: 0, offsetY: 0 },
+      padding: { left: 20, right: 20, top: 10, bottom: 10 },
+    }).setScrollFactor(0).setOrigin(0.5, 0.5);
+
+    this.score = this.add.text(width / 2, height / 2 + 80, `游戏得分：${Game.totalScore.toString()}`, {
+      fontSize: '30px',
+      color: '#ffffff',
+      shadow: { fill: true, blur: 0, offsetY: 0 },
+      padding: { left: 20, right: 20, top: 10, bottom: 10 },
+    }).setScrollFactor(0).setOrigin(0.5, 0.5);
+
+    const btn = new Button(this, '再来一局', () => {
       new Main();
     });
 
     this.add.existing(btn);
   }
 }
-
