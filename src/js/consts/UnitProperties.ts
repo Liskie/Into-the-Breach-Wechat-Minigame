@@ -1,7 +1,7 @@
 enum UnitProperties {
   MoveDelay = 100,
   ShotDelay = 60,
-  GameHp = 7,
+  GameHp = 4,
   ShotFrame = 3,
 }
 

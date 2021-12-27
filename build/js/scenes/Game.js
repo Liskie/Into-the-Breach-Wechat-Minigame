@@ -33,6 +33,7 @@ export default class Game extends Phaser.Scene {
         this.dotoX = 40;
         // 剩余血量
         this.bloodNum = 4;
+        this.gameHpBars = new Map();
         // board that contains the units
         this.BOARD_SIZE = 8;
         this.board = new Array();
@@ -55,6 +56,7 @@ export default class Game extends Phaser.Scene {
         this.cntEmerges = 0;
         this.cntAliens = 0;
         this.gameHp = UnitProperties.GameHp;
+        this.maxGameHp = UnitProperties.GameHp;
         this.isGameEnd = false;
         this.cntAlienKill = 0;
         this.cntPlayer = 3;
@@ -69,6 +71,7 @@ export default class Game extends Phaser.Scene {
         this.buttonEvent();
         this.drawTime();
         this.drawTurn();
+        this.drawGameHp();
         // this.drawPortraitAndAttackBtn();
         // 先屏蔽绘制进度的
         // this.drawbloodEvent(1);
@@ -281,6 +284,27 @@ export default class Game extends Phaser.Scene {
                 }
             }
         }));
+    }
+    drawGameHp() {
+        const gameHpX = width / 6;
+        const gameHpY = height / 36;
+        const gameHpWidth = 16;
+        const gameHpHeight = 20;
+        const margin = TextureProperties.Margin;
+        const padding = TextureProperties.Padding;
+        const innerPadding = padding / 2;
+        const hpBarWidth = gameHpWidth * this.maxGameHp + margin * 2;
+        const hpBarHeight = gameHpHeight + margin * 2;
+        this.add.graphics()
+            .fillStyle(Colors.MainPurple)
+            .fillRect(gameHpX, gameHpY, hpBarWidth, hpBarHeight);
+        this.add.graphics()
+            .fillStyle(Colors.Black)
+            .fillRect(gameHpX + margin, gameHpY + margin, hpBarWidth - margin * 2, hpBarHeight - margin * 2);
+        for (let hpIndex = 0; hpIndex < this.maxGameHp; hpIndex++) {
+            this.gameHpBars.set(hpIndex + 1, this.add.rectangle(gameHpX + margin + innerPadding + gameHpWidth * hpIndex, gameHpY + margin + innerPadding, gameHpWidth - innerPadding * 2, gameHpHeight - innerPadding * 2, Colors.GameHpOrange)
+                .setOrigin(0, 0));
+        }
     }
     drawMechStatusList() {
         const margin = TextureProperties.Margin;

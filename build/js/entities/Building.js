@@ -1,6 +1,7 @@
 import { Unit } from './Unit';
 import BuildingProperties from '../consts/BuildingProperties';
 import TextureKeys from '../consts/TextureKeys';
+import Colors from '../consts/Colors';
 export class Building extends Unit {
     constructor(game, coords, sprite, hp, maxHp, ruinFlag = false) {
         // super(game, coords, sprite, hp, maxHp);
@@ -50,16 +51,27 @@ export class Building extends Unit {
     dead() {
         this.game.dead(this);
     }
+    updateGameHpBar() {
+        this.game.gameHpBars.forEach((value, key) => {
+            if (key <= this.game.gameHp) {
+                value.setFillStyle(Colors.GameHpOrange);
+            }
+            else {
+                value.setFillStyle(Colors.Black);
+            }
+        });
+    }
     beAttacked(damage) {
         if (this.hp > 0) {
             this.hp -= damage;
+            if (this.ruinFlag) {
+                this.game.gameHp -= damage;
+                this.updateGameHpBar();
+            }
             if (this.hp <= 0) {
                 this.dead();
             }
             else {
-                if (this.ruinFlag) {
-                    this.game.gameHp -= damage;
-                }
                 if (this.hp == 1) {
                     this.sprite.destroy(true);
                     this.sprite = Building.getSprite(this.game, this.coords, this.ruinFlag, true);

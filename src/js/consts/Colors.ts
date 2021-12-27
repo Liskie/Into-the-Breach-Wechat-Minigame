@@ -3,6 +3,7 @@ enum Colors {
   BrightYellow = 0xFFFF32,
   BrightRed = 0xFF3232,
   Orange = 0xFF5500,
+  GameHpOrange = 0xef8c4e,
   Green = 0x00FF00,
   Black = 0x000000,
   White = 0xFFFFFF,
