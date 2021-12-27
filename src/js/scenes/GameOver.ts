@@ -44,7 +44,9 @@ export default class GameOver extends Phaser.Scene {
 
     btn.setInteractive(new Phaser.Geom.Rectangle(0, 0, btn.width, btn.height), Phaser.Geom.Rectangle.Contains);
     btn.on('pointerdown', () => {
-      new Main();
+      if (Game.isGameTerminated) {
+        new Main();
+      }
     });
   }
 }

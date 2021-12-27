@@ -44,7 +44,9 @@ export default class Author extends Phaser.Scene {
 
     back.setInteractive(new Phaser.Geom.Rectangle(0, 0, back.width, back.height), Phaser.Geom.Rectangle.Contains);
     back.on('pointerdown', () => {
-      new Main();
+      if (Game.isGameTerminated) {
+        new Main();
+      }
     });
   }
 }

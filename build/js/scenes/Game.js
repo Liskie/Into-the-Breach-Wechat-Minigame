@@ -63,6 +63,7 @@ export default class Game extends Phaser.Scene {
         this.isPlayerTurn = false;
     }
     create() {
+        Game.isGameTerminated = false;
         this.creatAnims();
         // 设置游戏背景色
         // this.setBackgroundColor();
@@ -562,6 +563,7 @@ export default class Game extends Phaser.Scene {
     }
     playerMoveAndAttack() {
         if (this.gameHp <= 0 || this.cntPlayer <= 0 || this.Turn === -1) {
+            Game.isGameTerminated = true;
             Game.isGameWin = !((this.gameHp <= 0 || this.cntPlayer <= 0));
             this.isGameEnd = true;
             Game.totalScore = (Game.isGameWin ? 10000 : 0) + this.cntPlayer * 500 + this.gameHp * 300 + this.cntAlienKill * 250;
@@ -843,4 +845,5 @@ export default class Game extends Phaser.Scene {
     }
 }
 Game.isGameWin = false;
+Game.isGameTerminated = true;
 Game.totalScore = 0;

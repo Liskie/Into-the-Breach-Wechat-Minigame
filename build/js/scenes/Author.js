@@ -2,6 +2,7 @@ import SceneKeys from '../consts/SceneKeys';
 // eslint-disable-next-line import/no-cycle
 import Main from '../main';
 import { screenWidth as width, screenHeight as height } from '../utils/index';
+import Game from './Game';
 /**
  * 游戏结束场景
  */
@@ -33,7 +34,9 @@ export default class Author extends Phaser.Scene {
         }).setScrollFactor(0).setOrigin(0.5, 0.5);
         back.setInteractive(new Phaser.Geom.Rectangle(0, 0, back.width, back.height), Phaser.Geom.Rectangle.Contains);
         back.on('pointerdown', () => {
-            new Main();
+            if (Game.isGameTerminated) {
+                new Main();
+            }
         });
     }
 }

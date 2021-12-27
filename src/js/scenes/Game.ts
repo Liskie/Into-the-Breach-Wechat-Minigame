@@ -80,12 +80,14 @@ export default class Game extends Phaser.Scene {
   public gameHp: number = UnitProperties.GameHp;
   public maxGameHp: number = UnitProperties.MaxGameHp;
   static isGameWin: boolean = false;
+  static isGameTerminated: boolean = true;
   static totalScore: number = 0;
   public isGameEnd: boolean = false;
   public cntAlienKill = 0;
   public cntPlayer = 3;
 
   create() {
+    Game.isGameTerminated = false;
     this.creatAnims();
     // 设置游戏背景色
 
@@ -633,6 +635,7 @@ export default class Game extends Phaser.Scene {
 
   playerMoveAndAttack() {
     if (this.gameHp <= 0 || this.cntPlayer <= 0 || this.Turn === -1) {
+      Game.isGameTerminated = true;
       Game.isGameWin = !((this.gameHp <= 0 || this.cntPlayer <= 0));
       this.isGameEnd = true;
       Game.totalScore = (Game.isGameWin ? 10000 : 0) + this.cntPlayer * 500 + this.gameHp * 300 + this.cntAlienKill * 250;
