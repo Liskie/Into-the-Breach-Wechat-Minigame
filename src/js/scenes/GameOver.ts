@@ -27,17 +27,24 @@ export default class GameOver extends Phaser.Scene {
       padding: { left: 20, right: 20, top: 10, bottom: 10 },
     }).setScrollFactor(0).setOrigin(0.5, 0.5);
 
-    this.score = this.add.text(width / 2, height / 2 + 80, `游戏得分：${Game.totalScore.toString()}`, {
+    this.score = this.add.text(width / 2, height / 2, `游戏得分：${Game.totalScore.toString()}`, {
       fontSize: '30px',
       color: '#ffffff',
       shadow: { fill: true, blur: 0, offsetY: 0 },
       padding: { left: 20, right: 20, top: 10, bottom: 10 },
     }).setScrollFactor(0).setOrigin(0.5, 0.5);
 
-    const btn = new Button(this, '再来一局', () => {
+    const btn = this.add.text(width / 2, height / 2 + 80, '再来一局', {
+      fontSize: '30px',
+      color: '#ffffff',
+      shadow: { fill: true, blur: 0, offsetY: 0 },
+      padding: { left: 20, right: 20, top: 10, bottom: 10 },
+      backgroundColor: '#000000'
+    }).setScrollFactor(0).setOrigin(0.5, 0.5);
+
+    btn.setInteractive(new Phaser.Geom.Rectangle(0, 0, btn.width, btn.height), Phaser.Geom.Rectangle.Contains);
+    btn.on('pointerdown', () => {
       new Main();
     });
-
-    this.add.existing(btn);
   }
 }
