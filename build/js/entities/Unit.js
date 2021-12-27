@@ -24,6 +24,15 @@ export class Unit {
         this.spriteShowAct = game.getEmptySprite(coords);
         this.spriteShowAct.destroy();
     }
+    static getSpriteArrow(game, coords, num) {
+        if (num > 4 || num <= 0) {
+            return game.getEmptySprite(coords);
+        }
+        return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.Arrow + num.toString())
+            .setOrigin(0.5 + 0.4 * Unit.spriteArrowPos[num][0], 0.5 + 0.4 * Unit.spriteArrowPos[num][1])
+            .setScale(1, 1)
+            .setInteractive();
+    }
     onClick() {
     }
     static getSpriteShowAct(game, coords) {
@@ -195,19 +204,32 @@ export class Unit {
     realAttack(tgt) {
         tgt.beAttacked(1);
     }
-    pushed(dtCoords) {
+    pushed(it) {
         var _a;
-        const tgtCoords = new Coords(this.coords.x + dtCoords.x, this.coords.y + dtCoords.y);
-        if (tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0) {
+        // eslint-disable-next-line no-empty
+        if (it > 4 || it <= 0) {
             return;
         }
-        if (this.game.board[tgtCoords.x][tgtCoords.y] == null) {
+        it = Unit.fuck[it];
+        const tgtCoords = new Coords(this.coords.x + Unit.shootPos[it][0], this.coords.y + Unit.shootPos[it][1]);
+        const spriteArrow = Unit.getSpriteArrow(this.game, this.coords, it);
+        if (tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0) {
+        }
+        else if (this.game.board[tgtCoords.x][tgtCoords.y] == null) {
             this.moveTo(tgtCoords);
         }
         else {
             this.beAttacked(1);
             (_a = this.game.board[tgtCoords.x][tgtCoords.x]) === null || _a === void 0 ? void 0 : _a.beAttacked(1);
         }
+        this.game.time.addEvent({
+            callback: () => {
+                spriteArrow.destroy();
+            },
+            delay: 1000,
+            callbackScope: this,
+            repeat: 0
+        });
     }
     refreshState() {
     }
@@ -228,3 +250,6 @@ export class Unit {
         this.spriteLink();
     }
 }
+Unit.shootPos = [[0, 0], [0, 1], [0, -1], [1, 0], [-1, 0]];
+Unit.spriteArrowPos = [[0, 0], [-1, -1], [1, 1], [1, -1], [-1, 1]];
+Unit.fuck = [0, 2, 1, 4, 3];

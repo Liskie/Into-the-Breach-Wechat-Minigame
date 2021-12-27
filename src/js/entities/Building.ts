@@ -99,4 +99,9 @@ export class Building extends Unit {
       }
     }
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  pushed(it: number) {
+
+  }
 }

@@ -21,6 +21,7 @@ export class Mech extends Unit {
         this.pilotKey = pilotKey;
         this.attacksLeft = attacksLeft;
         this.movesLeft = movesLeft;
+        this.shootDirectionIndex = -1;
     }
     onClick() {
         // Check if this is alive
@@ -298,9 +299,23 @@ export class Mech extends Unit {
             attackTargetCoords = lastCoords;
             shootDirectionIndex = 2;
         }
+        this.game.isPlayerTurn = false;
+        this.shootDirectionIndex = shootDirectionIndex;
         const shot = new Shot(this.game, this, this.findShotPath(attackTargetCoords), shootDirectionIndex);
         this.clearAttackDestination();
         this.game.selectedMech = null;
+        this.game.time.addEvent({
+            callback: () => {
+                this.game.isPlayerTurn = true;
+            },
+            delay: UnitProperties.ShotDelay * 10 + 300,
+            callbackScope: this,
+            repeat: 0
+        });
+    }
+    realAttack(tgt) {
+        tgt.pushed(this.shootDirectionIndex);
+        tgt.beAttacked(1);
     }
     findShotPath(desCoords) {
         const shotPath = [];

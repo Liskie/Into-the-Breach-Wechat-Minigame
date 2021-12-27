@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-cycle
 import { Alien } from '../Alien';
+import { Unit } from '../Unit';
 import { Coords } from '../Coords';
 import { Building } from '../Building';
 import { Mech } from '../Mech';
@@ -15,7 +16,6 @@ export class Carb extends Alien {
         this.atkRange = atkRange;
         this.hp = hp;
         this.maxHp = maxHp;
-        this.shootPos = [[0, 0], [0, 1], [0, -1], [1, 0], [-1, 0]];
     }
     static newUnit(game, coords) {
         const sprite = Carb.getSprite(game, coords);
@@ -35,8 +35,8 @@ export class Carb extends Alien {
             return false;
         }
         const dis = new Coords(tgtCoords.x - this.coords.x, tgtCoords.y - this.coords.y);
-        const dx = this.shootPos[this.atkIntention][0];
-        const dy = this.shootPos[this.atkIntention][1];
+        const dx = Unit.shootPos[this.atkIntention][0];
+        const dy = Unit.shootPos[this.atkIntention][1];
         if (dis.x == 0 && dx == 0 && dy * dis.y > 0) {
             let sign = true;
             for (let i = this.coords.y + dy; i != tgtCoords.y; i += dy) {
@@ -65,8 +65,8 @@ export class Carb extends Alien {
         if (this.atkIntention <= 0 || this.atkIntention > 4) {
             return ret;
         }
-        const dx = this.shootPos[this.atkIntention][0];
-        const dy = this.shootPos[this.atkIntention][1];
+        const dx = Unit.shootPos[this.atkIntention][0];
+        const dy = Unit.shootPos[this.atkIntention][1];
         for (let i = new Coords(nowCoords.x + dx, nowCoords.y + dy); i.x >= 0 && i.x < 8 && i.y >= 0 && i.y < 8; i.x += dx, i.y += dy) {
             if (!this.game.isShotPassable(i)) {
                 ret.x = i.x;
@@ -83,8 +83,8 @@ export class Carb extends Alien {
             return road;
         }
         const tgt = this.getAttackPos(this.coords);
-        const dx = this.shootPos[this.atkIntention][0];
-        const dy = this.shootPos[this.atkIntention][1];
+        const dx = Unit.shootPos[this.atkIntention][0];
+        const dy = Unit.shootPos[this.atkIntention][1];
         if (tgt.x >= 0 && tgt.x < 9 && tgt.y >= 0 && tgt.y < 9) {
             let i = new Coords(1, 1);
             for (i = new Coords(this.coords.x, this.coords.y); i.x >= 0 && i.x < 8 && i.y >= 0 && i.y < 8 && (i.x != tgt.x || i.y != tgt.y); i = new Coords(i.x + dx, i.y + dy)) {

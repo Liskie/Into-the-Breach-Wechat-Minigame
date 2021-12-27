@@ -28,6 +28,18 @@ export class Unit {
     this.spriteShowAct.destroy();
   }
 
+  static shootPos = [[0, 0], [0, 1], [0, -1], [1, 0], [-1, 0]];
+  static spriteArrowPos = [[0, 0], [-1, -1], [1, 1], [1, -1], [-1, 1]];
+  static getSpriteArrow(game: Game, coords: Coords, num: number) {
+    if (num > 4 || num <= 0) {
+      return game.getEmptySprite(coords);
+    }
+    return game.physics.add.sprite(game.boardWXCoords[coords.x][coords.y][0], game.boardWXCoords[coords.x][coords.y][1], TextureKeys.Arrow + num.toString())
+      .setOrigin(0.5 + 0.4 * Unit.spriteArrowPos[<integer>num][0], 0.5 + 0.4 * Unit.spriteArrowPos[<integer>num][1])
+      .setScale(1, 1)
+      .setInteractive();
+  }
+
   public active: boolean = false;
 
   onClick() {
@@ -213,17 +225,30 @@ export class Unit {
   realAttack(tgt: Unit) {
     tgt.beAttacked(1);
   }
-  pushed(dtCoords: Coords) {
-    const tgtCoords = new Coords(this.coords.x + dtCoords.x, this.coords.y + dtCoords.y);
-    if (tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0) {
+  static fuck = [0, 2, 1, 4, 3];
+  pushed(it: number) {
+    // eslint-disable-next-line no-empty
+    if (it > 4 || it <= 0) {
       return;
     }
-    if (this.game.board[tgtCoords.x][tgtCoords.y] == null) {
+    it = Unit.fuck[it];
+    const tgtCoords = new Coords(this.coords.x + Unit.shootPos[it][0], this.coords.y + Unit.shootPos[it][1]);
+    const spriteArrow = Unit.getSpriteArrow(this.game, this.coords, it);
+    if (tgtCoords.x > 7 || tgtCoords.y > 7 || tgtCoords.x < 0 || tgtCoords.y < 0) {
+    } else if (this.game.board[tgtCoords.x][tgtCoords.y] == null) {
       this.moveTo(tgtCoords);
     } else {
       this.beAttacked(1);
       this.game.board[tgtCoords.x][tgtCoords.x]?.beAttacked(1);
     }
+    this.game.time.addEvent({
+      callback: () => {
+        spriteArrow.destroy();
+      },
+      delay: 1000, // ms
+      callbackScope: this,
+      repeat: 0
+    });
   }
 
   refreshState() {

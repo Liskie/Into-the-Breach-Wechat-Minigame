@@ -78,7 +78,7 @@ export default class Game extends Phaser.Scene {
   public cntEmerges: number = 0;
   public cntAliens: number = 0;
   public gameHp: number = UnitProperties.GameHp;
-  public maxGameHp: number = UnitProperties.GameHp;
+  public maxGameHp: number = UnitProperties.MaxGameHp;
   static isGameWin: boolean = false;
   static totalScore: number = 0;
   public isGameEnd: boolean = false;
@@ -338,7 +338,7 @@ export default class Game extends Phaser.Scene {
   drawGameHp() {
     const gameHpX = width / 6;
     const gameHpY = height / 36;
-    const gameHpWidth = 16;
+    const gameHpWidth = 14;
     const gameHpHeight = 20;
     const margin = TextureProperties.Margin;
     const padding = TextureProperties.Padding;
@@ -353,7 +353,7 @@ export default class Game extends Phaser.Scene {
     this.add.graphics()
       .fillStyle(Colors.Black)
       .fillRect(gameHpX + margin, gameHpY + margin, hpBarWidth - margin * 2, hpBarHeight - margin * 2);
-    for (let hpIndex = 0; hpIndex < this.maxGameHp; hpIndex++) {
+    for (let hpIndex = 0; hpIndex < this.gameHp; hpIndex++) {
       this.gameHpBars.set(hpIndex + 1, this.add.rectangle(gameHpX + margin + innerPadding + gameHpWidth * hpIndex, gameHpY + margin + innerPadding,
         gameHpWidth - innerPadding * 2, gameHpHeight - innerPadding * 2, Colors.GameHpOrange)
         .setOrigin(0, 0));
